@@ -1,6 +1,12 @@
 FROM php:8.2-apache
 
-RUN docker-php-ext-install pdo pdo_mysql
+RUN apt-get update && apt-get install -y \
+    git \
+    unzip \
+    libzip-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN docker-php-ext-install pdo pdo_mysql zip
 
 RUN a2enmod rewrite
 
@@ -13,6 +19,6 @@ WORKDIR /var/www/html
 COPY . .
 
 RUN chown -R www-data:www-data /var/www/html/storage \
-    && chmod -R 775 /var/www/html/storage
+    && chmod -R 777 /var/www/html/storage
 
 EXPOSE 80
