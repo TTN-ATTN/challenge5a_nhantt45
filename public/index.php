@@ -1,14 +1,40 @@
-<!DOCTYPE html>
-<html lang="en">
+<?php
+require_once __DIR__ . '/../autoload.php';
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
+use App\Core\Session;
+use App\Controllers\AuthController;
 
-<body>
-    <h1>It works</h1>
-</body>
+Session::start();
 
-</html>
+$requestUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+
+switch ($requestUri) {
+    case '/':
+        if (!Session::get('user_id')) {
+            header('Location: /login');
+            exit;
+        }
+        $fullName = Session::get('full_name', 'User');
+        $role = Session::get('role', 'student');
+        require_once __DIR__ . '/../src/Views/home.php';
+        break;
+    case '/login':
+        $authController = new AuthController();
+        if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+            $authController->showLogin();
+        } else {
+            $authController->login();
+        }
+        break;
+    case '/logout':
+        $authController = new AuthController();
+        $authController->logout();
+        break;
+    default:
+        http_response_code(404);
+        echo "Page not found";
+        echo "Route: " . htmlspecialchars($requestUri);
+        break;
+}
+
+?>
