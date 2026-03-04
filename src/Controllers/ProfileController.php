@@ -26,6 +26,8 @@ class ProfileController
         $isOwnProfile = ($currentUserId == $profileUser['id']);
         $currentUserRole = Session::get('role');
 
+        $csrfToken = Session::generateCsrfToken();
+
         // Lấy thông báo lỗi/thành công từ Session (nếu có) rồi set lại thành null để tránh hiện lại ở lần load sau
         $toastError = Session::get('toast_error');
         $toastSuccess = Session::get('toast_success');
@@ -37,11 +39,34 @@ class ProfileController
 
     public function updateProfile()
     {
+        $csrtToken = $_POST['csrf_token'] ?? '';
+        if (!Session::verifyCsrfToken($csrtToken)) {
+            (new ErrorController())->forbidden("Yêu cầu không hợp lệ (CSRF token không đúng).");
+            return;
+        }
         $userId = Session::get('user_id');
         if (!$userId || Session::get('role') !== 'student') {
             (new ErrorController())->forbidden("Chỉ sinh viên mới được tự cập nhật thông tin.");
             return;
         }
+
+        // Reauthentication
+        $currentPassword = $_POST['password'] ?? '';
+        if (empty($currentPassword)) {
+            Session::set('toast_error', 'Vui lòng nhập mật khẩu hiện tại để xác nhận!');
+            header("Location: /profile?id=$userId");
+            exit;
+        }
+
+        $userModel = new User();
+        $currentUser = $userModel->getUserById($userId);
+
+        if (!password_verify($currentPassword, $currentUser['password'])) {
+            Session::set('toast_error', 'Mật khẩu hiện tại không chính xác!');
+            header("Location: /profile?id=$userId");
+            exit;
+        }
+
 
         $email = filter_var($_POST['email'] ?? '', FILTER_SANITIZE_EMAIL);
         $phone = htmlspecialchars($_POST['phone'] ?? '');

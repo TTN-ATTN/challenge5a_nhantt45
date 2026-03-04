@@ -45,15 +45,36 @@
         .btn-danger {
             background: #dc3545;
         }
+
         #toast-container {
-            visibility: hidden; min-width: 250px; background-color: #333; color: #fff;
-            text-align: center; border-radius: 4px; padding: 16px;
-            position: fixed; z-index: 1; right: 30px; top: 30px; font-size: 15px;
-            opacity: 0; transition: opacity 0.5s, visibility 0.5s;
+            visibility: hidden;
+            min-width: 250px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 4px;
+            padding: 16px;
+            position: fixed;
+            z-index: 1;
+            right: 30px;
+            top: 30px;
+            font-size: 15px;
+            opacity: 0;
+            transition: opacity 0.5s, visibility 0.5s;
         }
-        #toast-container.show { visibility: visible; opacity: 1; }
-        .toast-error { background-color: #dc3545 !important; }
-        .toast-success { background-color: #28a745 !important; }
+
+        #toast-container.show {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .toast-error {
+            background-color: #dc3545 !important;
+        }
+
+        .toast-success {
+            background-color: #28a745 !important;
+        }
     </style>
 </head>
 
@@ -73,13 +94,20 @@
         <div class="info-group"><strong>Email:</strong> <?= htmlspecialchars($profileUser['email']) ?></div>
         <div class="info-group"><strong>Số điện thoại:</strong> <?= htmlspecialchars($profileUser['phone_number']) ?></div>
         <div class="info-group"><strong>Vai trò:</strong> <?= $profileUser['role'] === 'teacher' ? 'Giáo viên' : 'Sinh viên' ?></div>
-        
+
         <hr>
 
         <div style="margin-top: 20px;">
             <?php if ($isOwnProfile && $profileUser['role'] === 'student'): ?>
                 <h3>Cập nhật thông tin</h3>
                 <form action="/profile" method="POST" enctype="multipart/form-data" style="background: #e9ecef; padding: 15px; border-radius: 5px;">
+                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
+
+                    <div class="info-group">
+                        <label style="color: red; font-weight: bold;">Mật khẩu hiện tại (*):</label><br>
+                        <input type="password" name="current_password" required placeholder="Xác thực mật khẩu hiện tại">
+                    </div>
+                    <hr>
                     <div class="info-group">
                         <label>Email mới:</label><br>
                         <input type="email" name="email" value="<?= htmlspecialchars($profileUser['email']) ?>" required>
@@ -110,34 +138,34 @@
                 <button class="btn btn-danger">Xóa sinh viên</button>
             <?php endif; ?>
         </div>
-    
-    <div id="toast-container"></div>
 
-    <script>
-        function showToast(message, type) {
-            var toast = document.getElementById("toast-container");
-            toast.innerText = message;
-            // Xóa class cũ
-            toast.classList.remove("toast-error", "toast-success");
-            // Thêm màu tùy theo loại lỗi hay thành công
-            if(type === 'error') toast.classList.add("toast-error");
-            if(type === 'success') toast.classList.add("toast-success");
-            toast.classList.add("show");
-            // Tự động ẩn sau 2 giây
-            setTimeout(function(){ 
-                toast.classList.remove("show"); 
-            }, 2000);
-        }
+        <div id="toast-container"></div>
 
-        // Đẩy giá trị từ PHP xuống Javascript
-        <?php if (!empty($toastError)): ?>
-            showToast("<?= htmlspecialchars($toastError) ?>", "error");
-        <?php endif; ?>
+        <script>
+            function showToast(message, type) {
+                var toast = document.getElementById("toast-container");
+                toast.innerText = message;
+                // Xóa class cũ
+                toast.classList.remove("toast-error", "toast-success");
+                // Thêm màu tùy theo loại lỗi hay thành công
+                if (type === 'error') toast.classList.add("toast-error");
+                if (type === 'success') toast.classList.add("toast-success");
+                toast.classList.add("show");
+                // Tự động ẩn sau 2 giây
+                setTimeout(function() {
+                    toast.classList.remove("show");
+                }, 2000);
+            }
 
-        <?php if (!empty($toastSuccess)): ?>
-            showToast("<?= htmlspecialchars($toastSuccess) ?>", "success");
-        <?php endif; ?>
-    </script>
+            // Đẩy giá trị từ PHP xuống Javascript
+            <?php if (!empty($toastError)): ?>
+                showToast("<?= htmlspecialchars($toastError) ?>", "error");
+            <?php endif; ?>
+
+            <?php if (!empty($toastSuccess)): ?>
+                showToast("<?= htmlspecialchars($toastSuccess) ?>", "success");
+            <?php endif; ?>
+        </script>
 </body>
 
 </html>
