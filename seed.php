@@ -25,11 +25,12 @@ try {
 
     $users = [
         ['ttn', $hashedPassword, 'Trần Trung Nhân', 'ttn@email.com', '0900000000', 'teacher'],
-        ['ttn2', $hashedPassword, 'Trần Trung Nhân 2', 'ttn2@email.com', '0900000001', 'student'],
-        ['teacher1', $hashedPassword, 'Giáo viên 1', 'teacher1@email.com', '0900000002', 'teacher'],
-        ['teacher2', $hashedPassword, 'Giáo viên 2', 'teacher2@email.com', '0900000003', 'teacher'],
-        ['student1', $hashedPassword, 'Sinh viên 1', 'student1@email.com', '0900000004', 'student'],
-        ['student2', $hashedPassword, 'Sinh viên 2', 'student2@email.com', '0900000005', 'student']
+        ['ttn2', $hashedPassword, 'Trần Trung Nhânn', 'ttn2@email.com', '0900000001', 'student'],
+        ['ttn3', $hashedPassword, 'Trần Trung Nhânnn', 'ttn3@email.com', '0900000002', 'student'],
+        ['teacher1', $hashedPassword, 'Giáo viên 1', 'teacher1@email.com', '0900000003', 'teacher'],
+        ['teacher2', $hashedPassword, 'Giáo viên 2', 'teacher2@email.com', '0900000004', 'teacher'],
+        ['student1', $hashedPassword, 'Sinh viên 1', 'student1@email.com', '0900000005', 'student'],
+        ['student2', $hashedPassword, 'Sinh viên 2', 'student2@email.com', '0900000006', 'student']
     ];
 
     $stmt = $pdo->prepare("INSERT INTO users (username, password, full_name, email, phone_number, role) VALUES (?, ?, ?, ?, ?, ?)");
