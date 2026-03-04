@@ -5,22 +5,32 @@ namespace App\Controllers;
 use App\Models\User;
 use App\Core\Session;
 use App\Controllers\ErrorController;
+use Error;
 
 class ProfileController
 {
     public function showProfile()
     {
         $currentUserId = Session::get('user_id');
-        if (!$currentUserId) {
+        $userModel = new User();
+        $currentUser = $userModel->getUserById($currentUserId);
+        if (!$currentUser) {
+            Session::destroy();
             header('Location: /login');
             exit;
         }
-        $targetId = $_GET['id'] ?? $currentUserId;
-        $userModel = new User();
+        if ($currentUser['session_token'] !== Session::get('session_token')) {
+            Session::destroy();
+            header('Location: /login?error=concurrent');
+            exit;
+        }
+        $targetId = $_GET['id'] ?? null;
+        if (!$targetId || !is_numeric($targetId) || empty($targetId)) {
+            $targetId = $currentUserId;
+        }
         $profileUser = $userModel->getUserById($targetId);
         if (!$profileUser) {
-            $errorController = new ErrorController();
-            $errorController->notFound();
+            ErrorController::notFound("Người dùng không tồn tại.");
             exit;
         }
         $isOwnProfile = ($currentUserId == $profileUser['id']);
@@ -37,12 +47,23 @@ class ProfileController
         require_once __DIR__ . '/../Views/profile.php';
     }
 
-    public function validateUpdateRequest($currentUser, $userId){
+    public function validateRequest($currentUser, $userId)
+    {
+        if (!$currentUser) {
+            Session::destroy();
+            header('Location: /login');
+            exit;
+        }
+        if ($currentUser['session_token'] !== Session::get('session_token')) {
+            Session::destroy();
+            header('Location: /login?error=concurrent');
+            exit;
+        }
         // CSRF
         $csrtToken = $_POST['csrf_token'] ?? '';
         if (!Session::verifyCsrfToken($csrtToken)) {
-            (new ErrorController())->forbidden("Yêu cầu không hợp lệ (CSRF token không đúng).");
-            return;
+            ErrorController::forbidden("Yêu cầu không hợp lệ (CSRF token không đúng).");
+            exit;
         }
         $currentPassword = $_POST['current_password'] ?? '';
         if (empty($currentPassword)) {
@@ -58,26 +79,36 @@ class ProfileController
         }
     }
 
-    public function validateInfo($email, $phoneNumber, $userId, $fullName = null){
+    public function validateInfo($email, $phoneNumber, $location = "/", $fullName = null, $username = null)
+    {
         // Validate Email
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             Session::set('toast_error', 'Định dạng Email không hợp lệ!');
-            header("Location: /profile?id=$userId");
+            header("Location: $location");
             exit;
         }
 
         // Validate Số điện thoại
         if (preg_match('/[^0-9+\-\s]/', $phoneNumber)) {
             Session::set('toast_error', 'Số điện thoại chỉ được chứa số và các dấu + -');
-            header("Location: /profile?id=$userId");
+            header("Location: $location");
             exit;
         }
-    
-        if($fullName !== null){
+
+        if ($fullName !== null) {
             $allowedCharacters = '/^[a-zA-ZÀ-ỹ\s]+$/u';
             if (!preg_match($allowedCharacters, $fullName)) {
                 Session::set('toast_error', 'Họ tên chỉ được chứa chữ cái và khoảng trắng!');
-                header("Location: /profile?id=$userId");
+                header("Location: $location");
+                exit;
+            }
+        }
+
+        if ($username !== null) {
+            $allowedUsername = '/^[a-zA-Z0-9_]+$/';
+            if (!preg_match($allowedUsername, $username)) {
+                Session::set('toast_error', 'Tên đăng nhập chỉ được chứa chữ cái, số và dấu gạch dưới!');
+                header("Location: $location");
                 exit;
             }
         }
@@ -87,18 +118,18 @@ class ProfileController
     {
         $userId = Session::get('user_id');
         if (!$userId || Session::get('role') !== 'student') {
-            (new ErrorController())->forbidden("Chỉ sinh viên mới được tự cập nhật thông tin.");
+            ErrorController::forbidden("Chỉ sinh viên mới được tự cập nhật thông tin.");
             return;
         }
         $userModel = new User();
         $currentUser = $userModel->getUserById($userId);
-        
-        $this->validateUpdateRequest($currentUser, $userId);
+
+        $this->validateRequest($currentUser, $userId);
 
         $email = filter_var($_POST['email'] ?? '', FILTER_SANITIZE_EMAIL);
         $phoneNumber = htmlspecialchars($_POST['phone'] ?? '');
 
-        $this->validateInfo($email, $phoneNumber, $userId);
+        $this->validateInfo($email, $phoneNumber, "/profile?id=$userId");
 
         $newPassword = !empty($_POST['new_password']) ? password_hash($_POST['new_password'], PASSWORD_BCRYPT) : null;
         $avatarPath = null;
@@ -160,4 +191,80 @@ class ProfileController
         exit;
     }
 
+    public function teacherOperation($operation)
+    {
+        $userId = Session::get('user_id');
+        if (!$userId || Session::get('role') !== 'teacher') {
+            ErrorController::forbidden("Chỉ giáo viên mới được thực hiện thao tác này.");
+            exit;
+        }
+        $userModel = new User();
+        $currentUser = $userModel->getUserById($userId);
+
+        $this->validateRequest($currentUser, $userId);
+
+        switch ($operation) {
+            case 'create':
+                $username = htmlspecialchars($_POST['username'] ?? '');
+                $fullName = htmlspecialchars($_POST['full_name'] ?? '');
+                $email = filter_var($_POST['email'] ?? '', FILTER_SANITIZE_EMAIL);
+                $phoneNumber = htmlspecialchars($_POST['phone'] ?? '');
+                $password = $_POST['password'] ?? '';
+
+                if (empty($username) || empty($fullName) || empty($email) || empty($phoneNumber) || empty($password)) {
+                    Session::set('toast_error', 'Vui lòng nhập đầy đủ thông tin để tạo sinh viên mới!');
+                    header("Location: /");
+                    exit;
+                }
+
+                $this->validateInfo($email, $phoneNumber, "/create-student", $fullName, $username);
+
+                $userModel->createStudent($username, password_hash($password, PASSWORD_BCRYPT), $fullName, $email, $phoneNumber);
+                Session::set('toast_success', 'Tạo sinh viên mới thành công!');
+                header("Location: /");
+                exit;
+
+            case 'edit':
+                $targetStudentId = $_POST['student_id'] ?? '';
+                $username = htmlspecialchars($_POST['username'] ?? '');
+                $fullName = htmlspecialchars($_POST['full_name'] ?? '');
+                $email = filter_var($_POST['email'] ?? '', FILTER_SANITIZE_EMAIL);
+                $phoneNumber = htmlspecialchars($_POST['phone'] ?? '');
+                $newPassword = !empty($_POST['new_password']) ? password_hash($_POST['new_password'], PASSWORD_BCRYPT) : null;
+
+                $this->validateInfo($email, $phoneNumber, "/profile?id=$targetStudentId", $fullName, $username);
+
+                $userModel->updateStudentProfileForTeacher($targetStudentId, $username, $fullName, $email, $phoneNumber, $newPassword);
+                Session::set('toast_success', 'Cập nhật thông tin sinh viên thành công!');
+                header("Location: /profile?id=$targetStudentId");
+                exit;
+
+            case 'delete':
+                $targetStudentId = $_POST['student_id'] ?? '';
+                $userModel->deleteStudent($targetStudentId);
+
+                Session::set('toast_success', 'Xóa sinh viên thành công!');
+                header("Location: /");
+                exit;
+
+            default:
+                ErrorController::forbidden("Hành động không hợp lệ.");
+                exit;
+        }
+    }
+
+    public function createStudent()
+    {
+        $this->teacherOperation("create");
+    }
+
+    public function editStudent()
+    {
+        $this->teacherOperation("edit");
+    }
+
+    public function deleteStudent()
+    {
+        $this->teacherOperation("delete");
+    }
 }
