@@ -30,7 +30,6 @@ class AuthController{
                 require_once __DIR__ . '/../Views/login.php';
             }
         } else {
-            $error = "Invalid request method";
             require_once __DIR__ . '/../Views/login.php';
         }
     }
