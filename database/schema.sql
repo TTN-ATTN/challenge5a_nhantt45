@@ -12,6 +12,7 @@ CREATE TABLE
         phone_number VARCHAR(20) NOT NULL UNIQUE,
         avatar VARCHAR(255), -- path to avatar image
         role VARCHAR(20) NOT NULL CHECK (role IN ('teacher', 'student')) DEFAULT 'student',
+        session_token VARCHAR(255) DEFAULT NULL,
         updated_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     );
 
