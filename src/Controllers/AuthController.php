@@ -19,10 +19,13 @@ class AuthController{
             $user = $userModel->getUserByUsername($username);
 
             if ($user && password_verify($password, $user['password'])) {
+                $sessionToken = bin2hex(random_bytes(32));
+                $userModel->updateSessionToken($user['id'], $sessionToken);
                 Session::set('user_id', $user['id']);
                 Session::set('role', $user['role']);
                 Session::set('username', $user['username']);
                 Session::set('full_name', $user['full_name']);
+                Session::set('session_token', $sessionToken);
                 header('Location: /');
                 exit;
             } else {
@@ -35,6 +38,10 @@ class AuthController{
     }
 
     public function showLogin(){
+        $error = $_GET['error'] ?? null;
+         if($error === 'concurrent'){
+            $error = "Tài khoản của bạn đã được đăng nhập ở nơi khác. Vui lòng đăng nhập lại.";
+        }
         require_once __DIR__ . '/../Views/login.php';
     }
 
