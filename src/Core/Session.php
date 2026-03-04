@@ -10,9 +10,9 @@ class Session {
                 'lifetime' => 86400, // 1 ngày
                 'path' => '/',
                 // 'domain' => $_SERVER['HTTP_HOST'],
-                'secure' => false, 
-                'httponly' => true, 
-                'samesite' => 'Strict' 
+                'secure' => false, // Cho phép gửi cookie qua HTTP
+                'httponly' => true, // Chỉ cho phép truy cập cookie qua HTTP, chống XSS 
+                'samesite' => 'Strict' // Chống CSRF, chỉ gửi cookie trong cùng site
             ]);
 
             session_start();
