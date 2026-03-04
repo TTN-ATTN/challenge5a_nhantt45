@@ -37,40 +37,28 @@ class ProfileController
         require_once __DIR__ . '/../Views/profile.php';
     }
 
-    public function updateProfile()
-    {
+    public function validateUpdateRequest($currentUser, $userId){
+        // CSRF
         $csrtToken = $_POST['csrf_token'] ?? '';
         if (!Session::verifyCsrfToken($csrtToken)) {
             (new ErrorController())->forbidden("Yêu cầu không hợp lệ (CSRF token không đúng).");
             return;
         }
-        $userId = Session::get('user_id');
-        if (!$userId || Session::get('role') !== 'student') {
-            (new ErrorController())->forbidden("Chỉ sinh viên mới được tự cập nhật thông tin.");
-            return;
-        }
-
-        // Reauthentication
-        $currentPassword = $_POST['password'] ?? '';
+        $currentPassword = $_POST['current_password'] ?? '';
         if (empty($currentPassword)) {
             Session::set('toast_error', 'Vui lòng nhập mật khẩu hiện tại để xác nhận!');
             header("Location: /profile?id=$userId");
             exit;
         }
 
-        $userModel = new User();
-        $currentUser = $userModel->getUserById($userId);
-
         if (!password_verify($currentPassword, $currentUser['password'])) {
             Session::set('toast_error', 'Mật khẩu hiện tại không chính xác!');
             header("Location: /profile?id=$userId");
             exit;
         }
+    }
 
-
-        $email = filter_var($_POST['email'] ?? '', FILTER_SANITIZE_EMAIL);
-        $phone = htmlspecialchars($_POST['phone'] ?? '');
-
+    public function validateInfo($email, $phoneNumber, $userId, $fullName = null){
         // Validate Email
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             Session::set('toast_error', 'Định dạng Email không hợp lệ!');
@@ -79,13 +67,40 @@ class ProfileController
         }
 
         // Validate Số điện thoại
-        if(preg_match('/[^0-9+\-\s]/', $phone)) {
+        if (preg_match('/[^0-9+\-\s]/', $phoneNumber)) {
             Session::set('toast_error', 'Số điện thoại chỉ được chứa số và các dấu + -');
             header("Location: /profile?id=$userId");
             exit;
         }
+    
+        if($fullName !== null){
+            $allowedCharacters = '/^[a-zA-ZÀ-ỹ\s]+$/u';
+            if (!preg_match($allowedCharacters, $fullName)) {
+                Session::set('toast_error', 'Họ tên chỉ được chứa chữ cái và khoảng trắng!');
+                header("Location: /profile?id=$userId");
+                exit;
+            }
+        }
+    }
 
-        $password = !empty($_POST['password']) ? password_hash($_POST['password'], PASSWORD_BCRYPT) : null;
+    public function updateProfile()
+    {
+        $userId = Session::get('user_id');
+        if (!$userId || Session::get('role') !== 'student') {
+            (new ErrorController())->forbidden("Chỉ sinh viên mới được tự cập nhật thông tin.");
+            return;
+        }
+        $userModel = new User();
+        $currentUser = $userModel->getUserById($userId);
+        
+        $this->validateUpdateRequest($currentUser, $userId);
+
+        $email = filter_var($_POST['email'] ?? '', FILTER_SANITIZE_EMAIL);
+        $phoneNumber = htmlspecialchars($_POST['phone'] ?? '');
+
+        $this->validateInfo($email, $phoneNumber, $userId);
+
+        $newPassword = !empty($_POST['new_password']) ? password_hash($_POST['new_password'], PASSWORD_BCRYPT) : null;
         $avatarPath = null;
 
         if (!empty($_POST['avatar_url'])) {
@@ -100,7 +115,7 @@ class ProfileController
             $fileTmpPath = $_FILES['avatar_file']['tmp_name'];
             $fileName = $_FILES['avatar_file']['name'];
             $fileSize = $_FILES['avatar_file']['size'];
-            
+
             if ($fileSize < 2097152) {
                 $bannedCharacters = ['..', '/', '\\'];
                 foreach ($bannedCharacters as $char) {
@@ -112,7 +127,7 @@ class ProfileController
                 $finfo = finfo_open(FILEINFO_MIME_TYPE);
                 $mime = finfo_file($finfo, $fileTmpPath);
                 $allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
-                
+
                 if (in_array($mime, $allowedMimeTypes)) {
                     $newFileName = md5(time() . $fileName) . '.' . pathinfo($fileName, PATHINFO_EXTENSION);
                     $uploadDir = __DIR__ . '/../../storage/uploads/';
@@ -136,14 +151,13 @@ class ProfileController
         }
 
         // Lấy lại avatar cũ nếu không có cập nhật mới
-        $userModel = new User();
-        $currentUser = $userModel->getUserById($userId);
         $finalAvatar = $avatarPath ?? $currentUser['avatar'];
 
-        $userModel->updateStudentProfile($userId, $email, $phone, $finalAvatar, $password);
+        $userModel->updateStudentProfile($userId, $email, $phoneNumber, $finalAvatar, $newPassword);
 
         Session::set('toast_success', 'Cập nhật thông tin thành công!');
         header("Location: /profile?id=$userId");
         exit;
     }
+
 }
