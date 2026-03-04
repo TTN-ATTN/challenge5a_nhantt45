@@ -3,15 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/assets/css/style.css">
     <title>Dashboard</title>
-    <style>
-        body { font-family: sans-serif; padding: 20px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }
-        th { background-color: #f4f4f4; }
-        .action-link { color: #007bff; text-decoration: none; }
-        .action-link:hover { text-decoration: underline; }
-    </style>
 </head>
 <body>
     <h2>Hệ thống Quản lý Lớp học</h2>
@@ -49,5 +42,16 @@
             <?php endforeach; ?>
         </tbody>
     </table>
+    <div id="toast-container"></div>
+    <script src="/assets/js/script.js"></script>
+    <script>
+        <?php if (!empty($toastError)): ?>
+            showToast("<?= htmlspecialchars($toastError) ?>", "error");
+        <?php endif; ?>
+
+        <?php if (!empty($toastSuccess)): ?>
+            showToast("<?= htmlspecialchars($toastSuccess) ?>", "success");
+        <?php endif; ?>
+    </script>
 </body>
 </html>
