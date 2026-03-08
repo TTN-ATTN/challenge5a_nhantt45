@@ -8,6 +8,12 @@
     <link rel="stylesheet" href="/assets/css/style.css">
     <style>
         .inline-input { padding: 6px; width: 100%; max-width: 250px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        .message-box { background: white; border: 1px solid #ddd; border-left: 4px solid #17a2b8; padding: 15px; border-radius: 4px; margin-bottom: 15px; }
+        .message-header { display: flex; align-items: center; margin-bottom: 10px; }
+        .message-avatar { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; margin-right: 10px; }
+        .message-sender { color: #007bff; margin-right: 10px; font-weight: bold; }
+        .message-time { font-size: 12px; color: #888; }
+        .message-content { color: #333; line-height: 1.5; white-space: pre-wrap; word-break: break-word; }
     </style>
 </head>
 
@@ -22,6 +28,7 @@
             <img src="<?= htmlspecialchars($avatarUrl) ?>" alt="Avatar" class="avatar">
         </div>
 
+        <!-- KHU VỰC 1: QUẢN LÝ DÀNH CHO GIÁO VIÊN -->
         <?php if ($currentUserRole === 'teacher' && $profileUser['role'] === 'student'): ?>
             <form id="editStudentForm" action="/edit-student" method="POST">
                 <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
@@ -69,6 +76,7 @@
                 </div>
             </form>
 
+        <!-- KHU VỰC 2: HIỂN THỊ THÔNG TIN CƠ BẢN -->
         <?php else: ?>
             <div class="info-group"><strong>Họ và tên:</strong> <?= htmlspecialchars($profileUser['full_name']) ?></div>
             <div class="info-group"><strong>Tên đăng nhập:</strong> <?= htmlspecialchars($profileUser['username']) ?></div>
@@ -78,6 +86,7 @@
             <hr>
 
             <div style="margin-top: 20px;">
+                <!-- KHU VỰC 2.1: CẬP NHẬT THÔNG TIN CHÍNH MÌNH -->
                 <?php if ($isOwnProfile && $profileUser['role'] === 'student'): ?>
                     <h3>Cập nhật thông tin cá nhân</h3>
                     <form action="/profile" method="POST" enctype="multipart/form-data" style="background: #e9ecef; padding: 15px; border-radius: 5px;">
@@ -114,6 +123,49 @@
                 <?php endif; ?>
             </div>
         <?php endif; ?>
+
+        <hr style="margin-top: 30px; border: 0; border-top: 2px dashed #ddd;">
+
+        <!-- nếu là profile người khác, hiển thị form gửi tin nhắn -->
+        <?php if (!$isOwnProfile): ?>
+            <div style="margin-top: 20px; background: #f4f8fa; padding: 20px; border-radius: 8px; border: 1px solid #cde4ee;">
+                <h3 style="margin-top: 0; color: #17a2b8;">Gửi tin nhắn cho <?= htmlspecialchars($profileUser['full_name']) ?></h3>
+                <form action="/send-message" method="POST">
+                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
+                    <input type="hidden" name="receiver_id" value="<?= $profileUser['id'] ?>">
+                    
+                    <textarea name="content" rows="4" style="width: 100%; padding: 12px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; resize: vertical; font-family: inherit;" placeholder="Nhập nội dung tin nhắn..." required></textarea>
+                    
+                    <button type="submit" class="btn" style="margin-top: 10px; background: #17a2b8;">Gửi tin nhắn</button>
+                </form>
+            </div>
+        <?php endif; ?>
+
+        <!-- nếu là trang của mình, hiển thị hộp thư -->
+        <?php if ($isOwnProfile): ?>
+            <div style="margin-top: 20px;">
+                <h3 style="color: #333;">Hộp thư đến (<?= count($messages ?? []) ?>)</h3>
+                
+                <?php if (empty($messages)): ?>
+                    <p style="color: #666; font-style: italic; background: #f9f9f9; padding: 15px; border-radius: 4px; text-align: center;">Bạn chưa có tin nhắn nào.</p>
+                <?php else: ?>
+                    <div style="display: flex; flex-direction: column;">
+                        <?php foreach ($messages as $msg): ?>
+                            <div class="message-box">
+                                <div class="message-header">
+                                    <?php $senderAvatar = $msg['sender_avatar'] ?? '/assets/default-avatar.jpg'; ?>
+                                    <img src="<?= htmlspecialchars($senderAvatar) ?>" class="message-avatar">
+                                    <span class="message-sender"><?= htmlspecialchars($msg['sender_name']) ?></span>
+                                    <span class="message-time"><?= date('d/m/Y H:i', strtotime($msg['created_at'])) ?></span>
+                                </div>
+                                <div class="message-content"><?= htmlspecialchars($msg['content']) ?></div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+            </div>
+        <?php endif; ?>
+
     </div>
 
     <div id="toast-container"></div>

@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Models\User;
+use App\Models\Message;
 use App\Core\Session;
 use App\Controllers\ErrorController;
 use Error;
@@ -43,6 +44,11 @@ class ProfileController
         $toastSuccess = Session::get('toast_success');
         Session::set('toast_error', null);
         Session::set('toast_success', null);
+        $messages = [];
+        if ($isOwnProfile) {
+            $messageModel = new Message();
+            $messages = $messageModel->getMessagesByReceiverId($currentUserId);
+        }
 
         require_once __DIR__ . '/../Views/profile.php';
     }
@@ -253,7 +259,8 @@ class ProfileController
         }
     }
 
-    public function showCreateStudentForm() {
+    public function showCreateStudentForm()
+    {
         if (Session::get('role') !== 'teacher') {
             (new ErrorController())->forbidden("Chỉ Giáo viên mới có quyền truy cập khu vực này.");
             exit;

@@ -30,7 +30,8 @@ $routes = [
         '/login' => ['controller' => 'App\Controllers\AuthController', 'method' => 'login'],
         '/profile' => ['controller' => 'App\Controllers\ProfileController', 'method' => 'updateProfile'],
         '/delete-student' => ['controller' => 'App\Controllers\ProfileController', 'method' => 'deleteStudent'],
-        '/create-student' => ['controller' => 'App\Controllers\ProfileController', 'method' => 'createStudent']
+        '/create-student' => ['controller' => 'App\Controllers\ProfileController', 'method' => 'createStudent'],
+        '/send-message' => ['controller' => 'App\Controllers\MessageController', 'method' => 'store']
     ]
 ];
 try {
