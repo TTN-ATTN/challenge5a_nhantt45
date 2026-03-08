@@ -44,11 +44,10 @@ class ProfileController
         $toastSuccess = Session::get('toast_success');
         Session::set('toast_error', null);
         Session::set('toast_success', null);
+
         $messages = [];
-        if ($isOwnProfile) {
-            $messageModel = new Message();
-            $messages = $messageModel->getMessagesByReceiverId($currentUserId);
-        }
+        $messageModel = new Message();
+        $messages = $messageModel->getMessagesByReceiverId($targetId);
 
         require_once __DIR__ . '/../Views/profile.php';
     }

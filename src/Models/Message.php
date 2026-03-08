@@ -21,9 +21,8 @@ class Message
 
     public function getMessagesByReceiverId($receiverId)
     {
-        // Lấy tin nhắn kèm theo thông tin của người gửi
         $stmt = $this->db->prepare("
-            SELECT m.content, m.created_at, u.full_name as sender_name, u.avatar as sender_avatar 
+            SELECT m.id, m.sender_id, m.content, m.created_at, u.full_name as sender_name, u.avatar as sender_avatar 
             FROM messages m 
             JOIN users u ON m.sender_id = u.id 
             WHERE m.receiver_id = ? 
@@ -31,5 +30,17 @@ class Message
         ");
         $stmt->execute([$receiverId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function updateMessage($messageId, $senderId, $content)
+    {
+        $stmt = $this->db->prepare("UPDATE messages SET content = ? WHERE id = ? AND sender_id = ?");
+        return $stmt->execute([$content, $messageId, $senderId]);
+    }
+
+    public function deleteMessage($messageId, $senderId)
+    {
+        $stmt = $this->db->prepare("DELETE FROM messages WHERE id = ? AND sender_id = ?");
+        return $stmt->execute([$messageId, $senderId]);
     }
 }

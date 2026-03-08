@@ -7,13 +7,12 @@ use App\Core\Session;
 
 class MessageController
 {
-    public function store()
+    // Hàm phụ trợ check auth gom lại cho gọn
+    private function checkAuthAndCsrf()
     {
-        // Check Login & Zombie Session
-        $senderId = Session::get('user_id');
+        $userId = Session::get('user_id');
         $localToken = Session::get('session_token');
-        $userModel = new User();
-        $currentUser = $userModel->getUserById($senderId);
+        $currentUser = (new User())->getUserById($userId);
 
         if (!$currentUser || $currentUser['session_token'] !== $localToken) {
             Session::destroy();
@@ -21,13 +20,16 @@ class MessageController
             exit;
         }
 
-        // Check CSRF
         if (!Session::verifyCsrfToken($_POST['csrf_token'] ?? '')) {
             (new ErrorController())->forbidden("Lỗi xác thực CSRF.");
             exit;
         }
+        return $userId;
+    }
 
-        // Lấy dữ liệu và validate
+    public function store()
+    {
+        $senderId = $this->checkAuthAndCsrf();
         $receiverId = $_POST['receiver_id'] ?? 0;
         $content = trim($_POST['content'] ?? ''); 
 
@@ -37,18 +39,41 @@ class MessageController
             exit;
         }
 
-        // Kiểm tra người nhận có tồn tại không
-        $receiver = $userModel->getUserById($receiverId);
-        if (!$receiver) {
+        if (!(new User())->getUserById($receiverId)) {
             Session::set('toast_error', 'Người nhận không tồn tại.');
             header('Location: /');
             exit;
         }
 
-        // Lưu tin nhắn
         (new Message())->sendMessage($senderId, $receiverId, $content);
-        
         Session::set('toast_success', 'Gửi tin nhắn thành công!');
+        header("Location: /profile?id=$receiverId");
+        exit;
+    }
+
+    public function update()
+    {
+        $senderId = $this->checkAuthAndCsrf();
+        $messageId = $_POST['message_id'] ?? 0;
+        $receiverId = $_POST['receiver_id'] ?? 0;
+        $content = trim($_POST['content'] ?? '');
+
+        if (!empty($content)) {
+            (new Message())->updateMessage($messageId, $senderId, $content);
+            Session::set('toast_success', 'Đã cập nhật tin nhắn!');
+        }
+        header("Location: /profile?id=$receiverId");
+        exit;
+    }
+
+    public function delete()
+    {
+        $senderId = $this->checkAuthAndCsrf();
+        $messageId = $_POST['message_id'] ?? 0;
+        $receiverId = $_POST['receiver_id'] ?? 0;
+
+        (new Message())->deleteMessage($messageId, $senderId);
+        Session::set('toast_success', 'Đã xóa tin nhắn!');
         header("Location: /profile?id=$receiverId");
         exit;
     }

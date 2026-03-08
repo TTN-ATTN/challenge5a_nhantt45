@@ -31,7 +31,9 @@ $routes = [
         '/profile' => ['controller' => 'App\Controllers\ProfileController', 'method' => 'updateProfile'],
         '/delete-student' => ['controller' => 'App\Controllers\ProfileController', 'method' => 'deleteStudent'],
         '/create-student' => ['controller' => 'App\Controllers\ProfileController', 'method' => 'createStudent'],
-        '/send-message' => ['controller' => 'App\Controllers\MessageController', 'method' => 'store']
+        '/send-message' => ['controller' => 'App\Controllers\MessageController', 'method' => 'store'],
+        '/edit-message' => ['controller' => 'App\Controllers\MessageController', 'method' => 'update'],
+        '/delete-message' => ['controller' => 'App\Controllers\MessageController', 'method' => 'delete']
     ]
 ];
 try {
