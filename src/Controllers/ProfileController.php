@@ -253,6 +253,21 @@ class ProfileController
         }
     }
 
+    public function showCreateStudentForm() {
+        if (Session::get('role') !== 'teacher') {
+            (new ErrorController())->forbidden("Chỉ Giáo viên mới có quyền truy cập khu vực này.");
+            exit;
+        }
+
+        $csrfToken = Session::generateCsrfToken();
+        $toastError = Session::get('toast_error');
+        $toastSuccess = Session::get('toast_success');
+        Session::set('toast_error', null);
+        Session::set('toast_success', null);
+
+        require_once __DIR__ . '/../Views/create-student.php';
+    }
+
     public function createStudent()
     {
         $this->teacherOperation("create");

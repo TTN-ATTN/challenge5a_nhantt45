@@ -24,6 +24,7 @@ $routes = [
         '/profile' => ['controller' => 'App\Controllers\ProfileController', 'method' => 'showProfile'],
         '/login' => ['controller' => 'App\Controllers\AuthController', 'method' => 'showLogin'],
         '/logout' => ['controller' => 'App\Controllers\AuthController', 'method' => 'logout'],
+        '/create-student' => ['controller' => 'App\Controllers\ProfileController', 'method' => 'showCreateStudentForm']
     ],
     'POST' => [
         '/login' => ['controller' => 'App\Controllers\AuthController', 'method' => 'login'],

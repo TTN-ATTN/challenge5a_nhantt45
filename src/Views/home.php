@@ -1,19 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/assets/css/style.css">
     <title>Dashboard</title>
 </head>
+
 <body>
     <h2>Hệ thống Quản lý Lớp học</h2>
-    
+
     <div style="margin-bottom: 20px;">
-        Xin chào, <strong><?= htmlspecialchars($currentUser['full_name'] ?? '') ?></strong> 
-        (Vai trò: <?= htmlspecialchars($currentUser['role'] ?? '') ?>) | 
+        Xin chào, <strong><?= htmlspecialchars($currentUser['full_name'] ?? '') ?></strong>
+        (Vai trò: <?= htmlspecialchars($currentUser['role'] ?? '') ?>) |
         <a href="/logout" class="action-link">Đăng xuất</a>
     </div>
+
+    <?php if ($currentUser['role'] === 'teacher'): ?>
+        <a href="/create-student" class="btn" style="display: inline-block; margin-bottom: 15px; background: #28a745;">+ Thêm sinh viên mới</a>
+    <?php endif; ?>
 
     <h3>Danh sách Người dùng</h3>
     <table>
@@ -54,4 +60,5 @@
         <?php endif; ?>
     </script>
 </body>
+
 </html>

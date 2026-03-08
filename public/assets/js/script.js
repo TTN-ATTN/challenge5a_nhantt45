@@ -48,6 +48,12 @@ function openModal(action, studentId) {
         desc.innerText = 'Nhập mật khẩu Giáo viên của bạn để lưu lại thông tin sinh viên này.';
         confirmBtn.className = 'btn';
         confirmBtn.style.background = '#28a745';
+    } else if (action === 'create') {
+        title.innerText = 'Tạo Sinh Viên';
+        title.style.color = '#28a745';
+        desc.innerText = 'Nhập mật khẩu Giáo viên của bạn để xác nhận thêm sinh viên mới.';
+        confirmBtn.className = 'btn';
+        confirmBtn.style.background = '#28a745';
     }
     
     modal.style.display = 'flex';
@@ -78,6 +84,9 @@ function submitAction() {
         // Chúng ta chỉ việc bơm mật khẩu vào hidden field và submit nó
         document.getElementById('edit_current_password').value = password;
         document.getElementById('editStudentForm').submit();
+    } else if (currentAction === 'create') {
+        document.getElementById('create_current_password').value = password;
+        document.getElementById('createStudentForm').submit();
     }
 }
 
