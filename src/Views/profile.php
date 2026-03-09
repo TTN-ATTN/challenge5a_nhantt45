@@ -168,17 +168,20 @@
 
         <hr style="margin-top: 30px; border: 0; border-top: 2px dashed #ddd;">
 
-         <!-- tin nhắn -->
-        <div style="margin-top: 20px; background: #f4f8fa; padding: 20px; border-radius: 8px; border: 1px solid #cde4ee;">
-            <h3 style="margin-top: 0; color: #17a2b8;">Để lại lời nhắn cho <?= htmlspecialchars($profileUser['full_name']) ?></h3>
-            <form action="/send-message" method="POST">
-                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
-                <input type="hidden" name="receiver_id" value="<?= $profileUser['id'] ?>">
-                <textarea name="content" rows="3" style="width: 100%; padding: 12px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; resize: vertical;" placeholder="Nhập nội dung tin nhắn..." required></textarea>
-                <button type="submit" class="btn" style="margin-top: 10px; background: #17a2b8;">Gửi</button>
-            </form>
-        </div>
+        <!-- tin nhắn -->
+        <?php if (!$isOwnProfile): ?>
+            <div style="margin-top: 20px; background: #f4f8fa; padding: 20px; border-radius: 8px; border: 1px solid #cde4ee;">
+                <h3 style="margin-top: 0; color: #17a2b8;">Để lại lời nhắn cho <?= htmlspecialchars($profileUser['full_name']) ?></h3>
+                <form action="/send-message" method="POST">
+                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
+                    <input type="hidden" name="receiver_id" value="<?= $profileUser['id'] ?>">
+                    <textarea name="content" rows="3" style="width: 100%; padding: 12px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; resize: vertical;" placeholder="Nhập nội dung tin nhắn..." required></textarea>
+                    <button type="submit" class="btn" style="margin-top: 10px; background: #17a2b8;">Gửi</button>
+                </form>
+            </div>
+        <?php endif; ?>
 
+        <!-- chỉ hiển thị tin nhắn nếu là chủ nhân trang hoặc người gửi -->
         <div style="margin-top: 20px;">
             <h3 style="color: #333;">(<?= count($messages ?? []) ?> tin nhắn)</h3>
             <?php if (empty($messages)): ?>
@@ -186,48 +189,50 @@
             <?php else: ?>
                 <div style="display: flex; flex-direction: column;">
                     <?php foreach ($messages as $msg): ?>
-                        <div class="message-box" id="msg-box-<?= $msg['id'] ?>">
-                            <div class="message-header" style="justify-content: space-between;">
-                                <div style="display: flex; align-items: center;">
-                                    <?php $senderAvatar = $msg['sender_avatar'] ?? '/assets/default-avatar.jpg'; ?>
-                                    <img src="<?= htmlspecialchars($senderAvatar) ?>" class="message-avatar">
-                                    <span class="message-sender"><?= htmlspecialchars($msg['sender_name']) ?></span>
-                                    <span class="message-time"><?= date('d/m/Y H:i', strtotime($msg['created_at'])) ?></span>
+                        <?php if ($isOwnProfile ||  $currentUserId == $msg['sender_id']): ?>
+                            <div class="message-box" id="msg-box-<?= $msg['id'] ?>">
+                                <div class="message-header" style="justify-content: space-between;">
+                                    <div style="display: flex; align-items: center;">
+                                        <?php $senderAvatar = $msg['sender_avatar'] ?? '/assets/default-avatar.jpg'; ?>
+                                        <img src="<?= htmlspecialchars($senderAvatar) ?>" class="message-avatar">
+                                        <span class="message-sender"><?= htmlspecialchars($msg['sender_name']) ?></span>
+                                        <span class="message-time"><?= date('d/m/Y H:i', strtotime($msg['created_at'])) ?></span>
+                                    </div>
+
+                                    <!-- chỉ hiển thị nút sửa/xóa với người gửi -->
+                                    <?php if ($currentUserId == $msg['sender_id']): ?>
+                                        <div>
+                                            <button onclick="toggleMsgEdit(<?= $msg['id'] ?>)" style="background:none; border:none; color:#007bff; cursor:pointer; font-size:13px;">Sửa</button>
+                                            <form action="/delete-message" method="POST" style="display:inline;" onsubmit="return confirm('Bạn có chắc muốn xóa tin nhắn này?');">
+                                                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
+                                                <input type="hidden" name="receiver_id" value="<?= $profileUser['id'] ?>">
+                                                <input type="hidden" name="message_id" value="<?= $msg['id'] ?>">
+                                                <button type="submit" style="background:none; border:none; color:#dc3545; cursor:pointer; font-size:13px;">Xóa</button>
+                                            </form>
+                                        </div>
+                                    <?php endif; ?>
                                 </div>
 
-                                <!-- chỉ hiển thị nút sửa/xóa với người gửi -->
+                                <!-- xem tin nhắn -->
+                                <div class="message-content" id="msg-view-<?= $msg['id'] ?>">
+                                    <?= nl2br(htmlspecialchars($msg['content'])) ?>
+                                </div>
+
+                                <!-- sửa tin nhắn (ẩn theo mặc định) -->
                                 <?php if ($currentUserId == $msg['sender_id']): ?>
-                                    <div>
-                                        <button onclick="toggleMsgEdit(<?= $msg['id'] ?>)" style="background:none; border:none; color:#007bff; cursor:pointer; font-size:13px;">Sửa</button>
-                                        <form action="/delete-message" method="POST" style="display:inline;" onsubmit="return confirm('Bạn có chắc muốn xóa tin nhắn này?');">
-                                            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
-                                            <input type="hidden" name="receiver_id" value="<?= $profileUser['id'] ?>">
-                                            <input type="hidden" name="message_id" value="<?= $msg['id'] ?>">
-                                            <button type="submit" style="background:none; border:none; color:#dc3545; cursor:pointer; font-size:13px;">Xóa</button>
-                                        </form>
-                                    </div>
+                                    <form id="msg-edit-<?= $msg['id'] ?>" action="/edit-message" method="POST" style="display: none; margin-top: 10px;">
+                                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
+                                        <input type="hidden" name="receiver_id" value="<?= $profileUser['id'] ?>">
+                                        <input type="hidden" name="message_id" value="<?= $msg['id'] ?>">
+                                        <textarea name="content" rows="3" style="width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px;" required><?= htmlspecialchars($msg['content']) ?></textarea>
+                                        <div style="margin-top: 5px; text-align: right;">
+                                            <button type="button" class="btn" style="background: #6c757d; padding: 4px 8px; font-size: 13px;" onclick="toggleMsgEdit(<?= $msg['id'] ?>)">Hủy</button>
+                                            <button type="submit" class="btn" style="background: #28a745; padding: 4px 8px; font-size: 13px;">Lưu</button>
+                                        </div>
+                                    </form>
                                 <?php endif; ?>
                             </div>
-
-                            <!-- xem tin nhắn -->
-                            <div class="message-content" id="msg-view-<?= $msg['id'] ?>">
-                                <?= nl2br(htmlspecialchars($msg['content'])) ?>
-                            </div>
-
-                            <!-- sửa tin nhắn (ẩn theo mặc định) -->
-                            <?php if ($currentUserId == $msg['sender_id']): ?>
-                                <form id="msg-edit-<?= $msg['id'] ?>" action="/edit-message" method="POST" style="display: none; margin-top: 10px;">
-                                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
-                                    <input type="hidden" name="receiver_id" value="<?= $profileUser['id'] ?>">
-                                    <input type="hidden" name="message_id" value="<?= $msg['id'] ?>">
-                                    <textarea name="content" rows="3" style="width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px;" required><?= htmlspecialchars($msg['content']) ?></textarea>
-                                    <div style="margin-top: 5px; text-align: right;">
-                                        <button type="button" class="btn" style="background: #6c757d; padding: 4px 8px; font-size: 13px;" onclick="toggleMsgEdit(<?= $msg['id'] ?>)">Hủy</button>
-                                        <button type="submit" class="btn" style="background: #28a745; padding: 4px 8px; font-size: 13px;">Lưu</button>
-                                    </div>
-                                </form>
-                            <?php endif; ?>
-                        </div>
+                        <?php endif; ?>
                     <?php endforeach; ?>
                 </div>
             <?php endif; ?>

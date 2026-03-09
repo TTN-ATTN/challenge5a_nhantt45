@@ -31,6 +31,13 @@ class MessageController
     {
         $senderId = $this->checkAuthAndCsrf();
         $receiverId = $_POST['receiver_id'] ?? 0;
+        
+        if ($senderId == $receiverId) {
+            Session::set('toast_error', 'Hành động từ chối: Không thể tự gửi tin nhắn cho chính mình!');
+            header("Location: /profile?id=$receiverId");
+            exit;
+        }
+
         $content = trim($_POST['content'] ?? ''); 
 
         if (empty($content)) {
