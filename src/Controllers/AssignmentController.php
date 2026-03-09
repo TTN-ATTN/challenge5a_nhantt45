@@ -13,7 +13,7 @@ class AssignmentController
         $currentUser = (new User())->getUserById($userId);
         if (!$currentUser || $currentUser['session_token'] !== $localToken) {
             Session::destroy();
-            header('Location: /login');
+            header('Location: /login?error=concurrent');
             exit;
         }
         return $currentUser;

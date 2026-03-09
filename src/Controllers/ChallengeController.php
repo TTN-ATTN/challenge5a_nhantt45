@@ -12,7 +12,7 @@ class ChallengeController
         $localToken = Session::get('session_token');
         $currentUser = (new User())->getUserById($userId);
         if (!$currentUser || $currentUser['session_token'] !== $localToken) {
-            Session::destroy(); header('Location: /login'); exit;
+            Session::destroy(); header('Location: /login?error=concurrent'); exit;
         }
         return $currentUser;
     }
