@@ -6,54 +6,62 @@
     <title>Thêm Sinh Viên Mới</title>
     <link rel="stylesheet" href="/assets/css/style.css">
 </head>
-<body>
-    <a href="/">&larr; Quay lại trang chủ</a>
+<body class="bg-gray-100 font-sans p-4 sm:p-6 text-gray-800">
+    <div class="max-w-4xl mx-auto">
+        <a href="/" class="text-indigo-600 hover:text-indigo-800 font-medium inline-block mb-4 transition">&larr; Quay lại trang chủ</a>
 
-    <div class="profile-card" style="margin-top: 20px;">
-        <h2 style="color: #28a745;">Thêm Sinh Viên Mới</h2>
-        <hr>
-        
-        <form id="createStudentForm" action="/create-student" method="POST" style="padding: 15px;">
-            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
-            <input type="hidden" name="current_password" id="create_current_password" value="">
+        <div class="bg-white p-8 rounded-lg shadow-sm">
+            <h2 class="text-2xl font-bold text-green-600 mb-4 border-b pb-2">Thêm Sinh Viên Mới</h2>
+            
+            <form id="createStudentForm" action="/create-student" method="POST" class="mt-4 space-y-4">
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
+                <input type="hidden" name="current_password" id="create_current_password" value="">
 
-            <div class="info-group">
-                <label>Tên đăng nhập (*):</label><br>
-                <input type="text" name="username" required style="padding:8px; width:100%; max-width: 400px; border: 1px solid #ccc; border-radius: 4px;">
-            </div>
-            <div class="info-group">
-                <label>Họ và tên (*):</label><br>
-                <input type="text" name="full_name" required style="padding:8px; width:100%; max-width: 400px; border: 1px solid #ccc; border-radius: 4px;">
-            </div>
-            <div class="info-group">
-                <label>Email (*):</label><br>
-                <input type="email" name="email" required style="padding:8px; width:100%; max-width: 400px; border: 1px solid #ccc; border-radius: 4px;">
-            </div>
-            <div class="info-group">
-                <label>Số điện thoại (*):</label><br>
-                <input type="text" name="phone" required style="padding:8px; width:100%; max-width: 400px; border: 1px solid #ccc; border-radius: 4px;">
-            </div>
-            <div class="info-group">
-                <label>Mật khẩu khởi tạo cho SV (*):</label><br>
-                <input type="password" name="password" required style="padding:8px; width:100%; max-width: 400px; border: 1px solid #ccc; border-radius: 4px;">
-            </div>
+                <div>
+                    <label class="block text-gray-700 font-medium mb-1">Tên đăng nhập (*):</label>
+                    <input type="text" name="username" required 
+                           class="w-full max-w-md px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition">
+                </div>
+                <div>
+                    <label class="block text-gray-700 font-medium mb-1">Họ và tên (*):</label>
+                    <input type="text" name="full_name" required 
+                           class="w-full max-w-md px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition">
+                </div>
+                <div>
+                    <label class="block text-gray-700 font-medium mb-1">Email (*):</label>
+                    <input type="email" name="email" required 
+                           class="w-full max-w-md px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition">
+                </div>
+                <div>
+                    <label class="block text-gray-700 font-medium mb-1">Số điện thoại (*):</label>
+                    <input type="text" name="phone" required 
+                           class="w-full max-w-md px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition">
+                </div>
+                <div>
+                    <label class="block text-gray-700 font-medium mb-1">Mật khẩu khởi tạo cho SV (*):</label>
+                    <input type="password" name="password" required 
+                           class="w-full max-w-md px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition">
+                </div>
 
-            <button type="button" class="btn" style="background: #28a745; margin-top: 15px;" onclick="openModal('create', null)">+ Tạo sinh viên</button>
-        </form>
+                <button type="button" class="mt-6 bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-md shadow transition" onclick="openModal('create', null)">+ Tạo sinh viên</button>
+            </form>
+        </div>
     </div>
 
-    <div id="toast-container"></div>
+    <div id="toast-container" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2"></div>
 
-    <div id="passwordModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center;">
-        <div style="background: white; padding: 20px; border-radius: 8px; width: 320px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-            <h3 id="modalTitle" style="margin-top: 0; color: #28a745;">Xác nhận</h3>
-            <p id="modalDesc" style="font-size: 14px; color: #555; margin-bottom: 20px;">Nhập mật khẩu Giáo viên để xác nhận tạo sinh viên.</p>
+    <div id="passwordModal" class="hidden fixed inset-0 bg-black bg-opacity-60 z-50 flex justify-center items-center backdrop-blur-sm transition-opacity">
+        <div class="bg-white p-6 rounded-lg w-full max-w-sm text-center shadow-xl">
+            <h3 id="modalTitle" class="text-xl font-bold text-green-600 mb-2">Xác nhận</h3>
+            <p id="modalDesc" class="text-sm text-gray-600 mb-6">Nhập mật khẩu Giáo viên để xác nhận tạo sinh viên.</p>
 
-            <input type="password" id="modal_password" style="width: 100%; padding: 10px; margin-bottom: 20px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px;" placeholder="Mật khẩu hiện tại...">
+            <input type="password" id="modal_password" 
+                   class="w-full px-4 py-2 mb-6 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition" 
+                   placeholder="Mật khẩu hiện tại...">
 
-            <div style="display: flex; justify-content: space-between;">
-                <button type="button" class="btn" style="background: #6c757d; width: 48%; margin: 0;" onclick="closeModal()">Hủy</button>
-                <button type="button" class="btn" id="modalConfirmBtn" style="background: #28a745; width: 48%; margin: 0;" onclick="submitAction()">Xác nhận</button>
+            <div class="flex justify-between gap-4">
+                <button type="button" class="flex-1 bg-gray-500 hover:bg-gray-600 text-white font-semibold py-2 rounded-md transition" onclick="closeModal()">Hủy</button>
+                <button type="button" id="modalConfirmBtn" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 rounded-md transition" onclick="submitAction()">Xác nhận</button>
             </div>
         </div>
     </div>

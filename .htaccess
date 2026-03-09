@@ -1,0 +1,10 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    <FilesMatch "^\.env|autoload\.php|seed\.php">
+        Order allow,deny
+        Deny from all
+    </FilesMatch>
+
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>

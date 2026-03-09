@@ -1,13 +1,43 @@
 // --- TOAST UI ---
 function showToast(message, type) {
-    var toast = document.getElementById("toast-container");
-    if (!toast) return;
-    toast.innerText = message;
-    toast.classList.remove("toast-error", "toast-success");
-    if (type === 'error') toast.classList.add("toast-error");
-    if (type === 'success') toast.classList.add("toast-success");
-    toast.classList.add("show");
-    setTimeout(function() { toast.classList.remove("show"); }, 2000);
+    var container = document.getElementById("toast-container");
+    if (!container) return;
+
+    var toast = document.createElement("div");
+    
+    var baseClasses = "px-4 py-3 rounded-lg shadow-lg text-white font-medium text-sm transition-all duration-300 transform translate-y-4 opacity-0 flex items-center gap-3";
+    var typeClasses = type === 'error' ? "bg-red-500" : "bg-green-500";
+    
+    toast.className = baseClasses + " " + typeClasses;
+    
+    var icon = document.createElement("span");
+    icon.innerHTML = type === 'error' 
+        ? '<svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>'
+        : '<svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>';
+        
+    var textNode = document.createElement("div");
+    textNode.className = "flex-1 break-words max-w-xs";
+    textNode.innerText = message;
+    
+    toast.appendChild(icon);
+    toast.appendChild(textNode);
+    
+    container.appendChild(toast);
+
+    requestAnimationFrame(function() {
+        toast.classList.remove("translate-y-4", "opacity-0");
+        toast.classList.add("translate-y-0", "opacity-100");
+    });
+
+    setTimeout(function() { 
+        toast.classList.remove("translate-y-0", "opacity-100");
+        toast.classList.add("translate-y-4", "opacity-0");
+        setTimeout(function() {
+            if (container.contains(toast)) {
+                container.removeChild(toast); 
+            }
+        }, 300);
+    }, 3000);
 }
 
 // --- STATE MANAGEMENT ---

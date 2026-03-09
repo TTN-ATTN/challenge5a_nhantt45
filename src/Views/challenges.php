@@ -5,135 +5,115 @@
     <meta charset="UTF-8">
     <title>Trò Chơi Giải Đố</title>
     <link rel="stylesheet" href="/assets/css/style.css">
-    <style>
-        .card {
-            background: white;
-            border: 1px solid #ddd;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-        }
-
-        .success-box {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-            padding: 15px;
-            border-radius: 5px;
-            margin-top: 15px;
-            font-family: "Courier New", Courier, monospace;
-            white-space: pre-wrap;
-            line-height: 1.6;
-        }
-    </style>
 </head>
 
-<body>
-    <a href="/">&larr; Quay lại trang chủ</a>
+<body class="bg-gray-100 font-sans p-4 sm:p-6 text-gray-800">
+    <div class="max-w-4xl mx-auto">
+        <a href="/" class="text-indigo-600 hover:text-indigo-800 font-medium inline-block mb-4 sm:mb-6 transition">&larr; Quay lại trang chủ</a>
 
-    <div style="max-width: 800px; margin: 20px auto;">
-        <h2 style="color: #6f42c1;">Trò Chơi Giải Đố</h2>
+        <h2 class="text-3xl font-bold text-purple-600 mb-8 border-b pb-2">Trò Chơi Giải Đố</h2>
 
         <!-- GIÁO VIÊN: TẠO THỬ THÁCH -->
         <?php if ($currentUser['role'] === 'teacher'): ?>
-            <div class="card" style="background: #f8f9fa; border-left: 4px solid #6f42c1;">
-                <h3 style="color: #6f42c1;">+ Tạo Challenge Mới</h3>
-                <form action="/challenges/create" method="POST" enctype="multipart/form-data">
+            <div class="bg-purple-50 p-6 rounded-lg shadow-sm border-l-4 border-purple-500 mb-8">
+                <h3 class="text-xl font-bold text-purple-700 mb-4">+ Tạo Challenge Mới</h3>
+                <form action="/challenges/create" method="POST" enctype="multipart/form-data" class="space-y-4">
                     <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
 
-                    <div style="margin-bottom: 15px;">
-                        <label>Gợi ý (Hint):</label><br>
-                        <textarea name="hint" rows="2" style="width: 100%; padding: 8px;" placeholder="Ví dụ: Tên một bài hát của Sơn Tùng M-TP" required></textarea>
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-1">Gợi ý (Hint):</label>
+                        <textarea name="hint" rows="2" class="w-full px-4 py-2 border rounded focus:ring-2 focus:ring-purple-400 focus:outline-none" placeholder="Ví dụ: Tên một bài hát của Sơn Tùng M-TP" required></textarea>
                     </div>
-                    <div style="margin-bottom: 15px;">
-                        <label style="color: #dc3545; font-weight: bold;">Upload File (.txt):</label><br>
-                        <p style="font-size: 13px; color: #666; margin-top: 5px;">Tên file chính là đáp án (viết không dấu, cách nhau khoảng trắng, vd: <strong>Em cua ngay hom qua.txt</strong>)</p>
-                        <input type="file" name="challenge_file" required accept=".txt">
+                    <div>
+                        <label class="block text-red-600 font-bold mb-1">Upload File (.txt):</label>
+                        <p class="text-sm text-gray-600 mb-2">Tên file chính là đáp án (viết không dấu, cách nhau khoảng trắng, vd: <strong class="text-gray-800">Em cua ngay hom qua.txt</strong>)</p>
+                        <input type="file" name="challenge_file" required accept=".txt" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-purple-100 file:text-purple-700 hover:file:bg-purple-200">
                     </div>
-                    <button type="submit" class="btn" style="background: #6f42c1;">Tạo Challenge</button>
+                    <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-6 rounded shadow transition">Tạo Challenge</button>
                 </form>
             </div>
         <?php endif; ?>
 
-        <hr style="margin: 30px 0;">
-
-        <h3>Danh Sách Thử Thách</h3>
+        <h3 class="text-2xl font-bold text-gray-700 mb-4">Danh Sách Thử Thách</h3>
         <?php if (empty($challenges)): ?>
-            <p style="font-style: italic; color: #888;">Chưa có thử thách nào.</p>
+            <p class="text-gray-500 bg-white p-6 rounded shadow-sm text-center italic">Chưa có thử thách nào.</p>
         <?php else: ?>
-            <?php foreach ($challenges as $chall): ?>
-                <div class="card">
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                        <div>
-                            <h4 style="margin-top: 0; margin-bottom: 5px; color: #333;">Challenge #<?= $chall['id'] ?></h4>
-                            <p style="font-size: 13px; color: #666; margin: 0 0 10px 0;">Giáo viên tạo: <strong><?= htmlspecialchars($chall['teacher_name']) ?></strong> | Ngày: <?= date('d/m/Y', strtotime($chall['created_at'])) ?></p>
+            <div class="space-y-6">
+                <?php foreach ($challenges as $chall): ?>
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                        <div class="flex flex-col sm:flex-row justify-between sm:items-start mb-4 gap-4">
+                            <div>
+                                <h4 class="text-xl font-bold text-gray-800 mb-1">Challenge #<?= $chall['id'] ?></h4>
+                                <p class="text-sm text-gray-500">Giáo viên tạo: <strong class="text-gray-700"><?= htmlspecialchars($chall['teacher_name']) ?></strong> | Ngày: <?= date('d/m/Y', strtotime($chall['created_at'])) ?></p>
+                            </div>
+
+                            <!-- Nếu là chủ sở hữu, hiện nút Sửa / Xóa -->
+                            <?php if ($currentUser['role'] === 'teacher' && $currentUser['id'] == $chall['teacher_id']): ?>
+                                <div class="flex gap-2">
+                                    <button onclick="toggleChallEdit(<?= $chall['id'] ?>)" class="bg-cyan-500 hover:bg-cyan-600 text-white text-sm font-medium py-1.5 px-3 rounded shadow-sm transition">Sửa</button>
+                                    <form action="/challenges/delete" method="POST" onsubmit="return confirm('Bạn có chắc muốn xóa thử thách này?');">
+                                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
+                                        <input type="hidden" name="challenge_id" value="<?= $chall['id'] ?>">
+                                        <button type="submit" class="bg-red-500 hover:bg-red-600 text-white text-sm font-medium py-1.5 px-3 rounded shadow-sm transition">Xóa</button>
+                                    </form>
+                                </div>
+                            <?php endif; ?>
                         </div>
 
-                        <!-- Nếu là chủ sở hữu, hiện nút Sửa / Xóa -->
+                        <!-- xem -->
+                        <div id="chall-view-<?= $chall['id'] ?>">
+                            <div class="bg-yellow-50 text-yellow-800 p-4 border-l-4 border-yellow-400 rounded-r mb-4">
+                                <strong class="font-semibold text-yellow-900">Gợi ý:</strong> <?= nl2br(htmlspecialchars($chall['hint'])) ?>
+                            </div>
+                        </div>
+
+                        <!-- edit -->
                         <?php if ($currentUser['role'] === 'teacher' && $currentUser['id'] == $chall['teacher_id']): ?>
-                            <div style="display: flex; gap: 10px;">
-                                <button onclick="toggleChallEdit(<?= $chall['id'] ?>)" class="btn" style="background: #17a2b8; padding: 4px 8px; font-size: 12px; margin: 0;">Sửa</button>
-                                <form action="/challenges/delete" method="POST" onsubmit="return confirm('Bạn có chắc muốn xóa thử thách này?');" style="margin: 0;">
+                            <div id="chall-edit-<?= $chall['id'] ?>" class="hidden bg-gray-50 p-4 rounded border border-gray-300 border-dashed mb-4">
+                                <form action="/challenges/edit" method="POST" enctype="multipart/form-data" class="space-y-4">
                                     <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
                                     <input type="hidden" name="challenge_id" value="<?= $chall['id'] ?>">
-                                    <button type="submit" class="btn" style="background: #dc3545; padding: 4px 8px; font-size: 12px; margin: 0;">Xóa</button>
+
+                                    <div>
+                                        <label class="block text-gray-700 font-medium mb-1">Cập nhật Gợi ý:</label>
+                                        <textarea name="hint" rows="2" class="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-green-400 focus:outline-none" required><?= htmlspecialchars($chall['hint']) ?></textarea>
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-gray-700 font-medium mb-1">Đổi file đáp án mới (.txt) - <i class="text-gray-500">Để trống nếu không muốn đổi</i>:</label>
+                                        <input type="file" name="challenge_file" accept=".txt" class="block w-full text-sm text-gray-500 file:mr-4 file:py-1.5 file:px-3 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-gray-200 file:text-gray-700 hover:file:bg-gray-300">
+                                    </div>
+
+                                    <div class="flex justify-end gap-2">
+                                        <button type="button" class="bg-gray-500 hover:bg-gray-600 text-white px-3 py-1.5 rounded text-sm transition" onclick="toggleChallEdit(<?= $chall['id'] ?>)">Hủy</button>
+                                        <button type="submit" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1.5 rounded text-sm transition">Lưu Thay Đổi</button>
+                                    </div>
                                 </form>
                             </div>
                         <?php endif; ?>
-                    </div>
 
-                    <!-- xem -->
-                    <div id="chall-view-<?= $chall['id'] ?>">
-                        <div style="background: #fff3cd; color: #856404; padding: 10px; border-left: 4px solid #ffeeba; margin-bottom: 15px;">
-                            <strong>Gợi ý:</strong> <?= nl2br(htmlspecialchars($chall['hint'])) ?>
-                        </div>
-                    </div>
+                        <?php if (isset($solvedId) && $solvedId == $chall['id']): ?>
+                            <div class="bg-green-100 text-green-800 border border-green-300 p-4 rounded font-mono whitespace-pre-wrap leading-relaxed mt-4">
+                                <strong class="text-lg text-green-900 block mb-2">Chúc mừng! Nội dung:</strong>
+                                <?= htmlspecialchars($solvedContent) ?>
+                            </div>
+                        <?php endif; ?>
 
-                    <!-- edit -->
-                    <?php if ($currentUser['role'] === 'teacher' && $currentUser['id'] == $chall['teacher_id']): ?>
-                        <div id="chall-edit-<?= $chall['id'] ?>" style="display: none; background: #f8f9fa; padding: 15px; border-radius: 5px; border: 1px dashed #ccc; margin-bottom: 15px;">
-                            <form action="/challenges/edit" method="POST" enctype="multipart/form-data">
+                        <?php if ($currentUser['role'] === 'student'): ?>
+                            <form action="/challenges/solve" method="POST" class="mt-4 flex flex-col sm:flex-row gap-2">
                                 <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
                                 <input type="hidden" name="challenge_id" value="<?= $chall['id'] ?>">
-
-                                <div style="margin-bottom: 10px;">
-                                    <label>Cập nhật Gợi ý:</label><br>
-                                    <textarea name="hint" rows="2" style="width: 100%; padding: 8px;" required><?= htmlspecialchars($chall['hint']) ?></textarea>
-                                </div>
-
-                                <div style="margin-bottom: 10px;">
-                                    <label>Đổi file đáp án mới (.txt) - <i>Để trống nếu không muốn đổi</i>:</label><br>
-                                    <input type="file" name="challenge_file" accept=".txt">
-                                </div>
-
-                                <div style="text-align: right;">
-                                    <button type="button" class="btn" style="background: #6c757d; padding: 4px 8px; font-size: 12px;" onclick="toggleChallEdit(<?= $chall['id'] ?>)">Hủy</button>
-                                    <button type="submit" class="btn" style="background: #28a745; padding: 4px 8px; font-size: 12px;">Lưu Thay Đổi</button>
-                                </div>
+                                <input type="text" name="answer" placeholder="Nhập đáp án của bạn..." class="flex-1 px-4 py-2 border rounded focus:ring-2 focus:ring-green-400 focus:outline-none" required>
+                                <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded shadow transition whitespace-nowrap">Giải Đố</button>
                             </form>
-                        </div>
-                    <?php endif; ?>
-
-                    <?php if (isset($solvedId) && $solvedId == $chall['id']): ?>
-                        <div class="success-box">
-                            <strong style="font-size: 18px;">Chúc mừng! Nội dung:</strong><br><br><?= htmlspecialchars($solvedContent) ?>
-                        </div>
-                    <?php endif; ?>
-
-                    <?php if ($currentUser['role'] === 'student'): ?>
-                        <form action="/challenges/solve" method="POST" style="margin-top: 15px; display: flex; gap: 10px;">
-                            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
-                            <input type="hidden" name="challenge_id" value="<?= $chall['id'] ?>">
-                            <input type="text" name="answer" placeholder="Nhập đáp án của bạn..." style="flex: 1; padding: 8px;" required>
-                            <button type="submit" class="btn" style="background: #28a745; margin: 0;">Giải Đố</button>
-                        </form>
-                    <?php endif; ?>
-                </div>
-            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </div>
+                <?php endforeach; ?>
+            </div>
         <?php endif; ?>
     </div>
 
-    <div id="toast-container"></div>
+    <div id="toast-container" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2"></div>
     <script src="/assets/js/script.js"></script>
     <script src="/assets/js/chall.js"></script>
     <script>
