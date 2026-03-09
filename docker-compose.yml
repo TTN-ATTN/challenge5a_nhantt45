@@ -12,14 +12,14 @@ services:
       db:
         condition: service_healthy
     env_file:
-      - .env
+      - .env.example
 
   db:
     image: mysql:8.0
     container_name: prog05-db
     restart: always
     env_file:
-      - .env
+      - .env.example
     volumes:
       - ./database:/docker-entrypoint-initdb.d
       - db_data:/var/lib/mysql

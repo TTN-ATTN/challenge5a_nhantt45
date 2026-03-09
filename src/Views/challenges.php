@@ -1,15 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <title>Trò Chơi Giải Đố</title>
-    <link rel="stylesheet" href="/assets/css/style.css">
-</head>
-
-<body class="bg-gray-100 font-sans p-4 sm:p-6 text-gray-800">
+<?php
+$pageTitle = 'Trò Chơi Giải Đố';
+$extraScripts = ['/assets/js/chall.js'];
+require __DIR__ . '/layout/header.php';
+?>
     <div class="max-w-4xl mx-auto">
-        <a href="/" class="text-indigo-600 hover:text-indigo-800 font-medium inline-block mb-4 sm:mb-6 transition">&larr; Quay lại trang chủ</a>
 
         <h2 class="text-3xl font-bold text-purple-600 mb-8 border-b pb-2">Trò Chơi Giải Đố</h2>
 
@@ -113,15 +107,6 @@
         <?php endif; ?>
     </div>
 
-    <div id="toast-container" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2"></div>
-    <script src="/assets/js/script.js"></script>
-    <script src="/assets/js/chall.js"></script>
-    <script>
-        <?php if (!empty($toastError)): ?> showToast("<?= htmlspecialchars($toastError) ?>", "error");
-        <?php endif; ?>
-        <?php if (!empty($toastSuccess)): ?> showToast("<?= htmlspecialchars($toastSuccess) ?>", "success");
-        <?php endif; ?>
-    </script>
-</body>
+    <?php require __DIR__ . '/layout/footer.php'; ?>
 
-</html>
+

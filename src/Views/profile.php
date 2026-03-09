@@ -1,16 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trang cá nhân - <?= htmlspecialchars($profileUser['full_name']) ?></title>
-    <link rel="stylesheet" href="/assets/css/style.css">
-</head>
-
-<body class="bg-gray-100 font-sans p-6 text-gray-800">
+<?php
+$pageTitle = 'Hồ sơ người dùng';
+$extraScripts = ['/assets/js/message-handling.js'];
+require __DIR__ . '/layout/header.php';
+?>
     <div class="max-w-4xl mx-auto">
-        <a href="/" class="text-indigo-600 hover:text-indigo-800 font-medium inline-block mb-4 transition">&larr; Quay lại trang chủ</a>
+        
 
         <div class="bg-white p-8 rounded-lg shadow-sm">
             <h2 class="text-2xl font-bold text-indigo-600 mb-6 border-b pb-2">Thông tin chi tiết</h2>
@@ -196,38 +190,6 @@
         </div>
     </div>
 
-    <div id="toast-container" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2"></div>
+    <?php require __DIR__ . '/layout/footer.php'; ?>
 
-    <form id="deleteStudentForm" action="/delete-student" method="POST" class="hidden">
-        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
-        <input type="hidden" name="student_id" id="delete_student_id" value="">
-        <input type="hidden" name="current_password" id="delete_current_password" value="">
-    </form>
 
-    <div id="passwordModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center;">
-        <div style="background: white; padding: 20px; border-radius: 8px; width: 320px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-            <h3 id="modalTitle" style="margin-top: 0; color: #dc3545;">Xác nhận</h3>
-            <p id="modalDesc" style="font-size: 14px; color: #555; margin-bottom: 20px;">Nhập mật khẩu của bạn để xác nhận.</p>
-
-            <input type="password" id="modal_password" style="width: 100%; padding: 10px; margin-bottom: 20px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px;" placeholder="Mật khẩu hiện tại...">
-
-            <div style="display: flex; justify-content: space-between;">
-                <button type="button" class="btn" style="background: #6c757d; width: 48%; margin: 0;" onclick="closeModal()">Hủy</button>
-                <button type="button" class="btn btn-danger" id="modalConfirmBtn" style="width: 48%; margin: 0;" onclick="submitAction()">Xác nhận</button>
-            </div>
-        </div>
-    </div>
-
-    <script src="/assets/js/script.js"></script>
-    <script src="/assets/js/message-handling.js"></script>
-    <script>
-        <?php if (!empty($toastError)): ?>
-            showToast("<?= htmlspecialchars($toastError) ?>", "error");
-        <?php endif; ?>
-        <?php if (!empty($toastSuccess)): ?>
-            showToast("<?= htmlspecialchars($toastSuccess) ?>", "success");
-        <?php endif; ?>
-    </script>
-</body>
-
-</html>

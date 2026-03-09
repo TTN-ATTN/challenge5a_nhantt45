@@ -300,6 +300,16 @@ class ProfileController
             exit;
         }
 
+        $currentUserId = Session::get('user_id');
+        $userModel = new User();
+        $currentUser = $userModel->getUserById($currentUserId);
+        
+        if (!$currentUser) {
+            Session::destroy();
+            header('Location: /login');
+            exit;
+        }
+
         $csrfToken = Session::generateCsrfToken();
         $toastError = Session::get('toast_error');
         $toastSuccess = Session::get('toast_success');

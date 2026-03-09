@@ -68,22 +68,22 @@ function openModal(action, studentId) {
     
     if (action === 'delete') {
         title.innerText = 'Xác nhận Xóa';
-        title.style.color = '#dc3545';
+        title.className = 'text-xl font-bold text-red-600 mb-2';
         desc.innerText = 'Hành động này không thể hoàn tác. Nhập mật khẩu Giáo viên để xác nhận.';
-        confirmBtn.className = 'btn btn-danger';
-        confirmBtn.style.background = '#dc3545';
+        confirmBtn.className = 'flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold py-2 rounded-md transition cursor-pointer';
+        confirmBtn.style.background = '';
     } else if (action === 'edit') {
         title.innerText = 'Lưu thay đổi';
-        title.style.color = '#28a745';
+        title.className = 'text-xl font-bold text-green-600 mb-2';
         desc.innerText = 'Nhập mật khẩu Giáo viên của bạn để lưu lại thông tin sinh viên này.';
-        confirmBtn.className = 'btn';
-        confirmBtn.style.background = '#28a745';
+        confirmBtn.className = 'flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 rounded-md transition cursor-pointer';
+        confirmBtn.style.background = '';
     } else if (action === 'create') {
         title.innerText = 'Tạo Sinh Viên';
-        title.style.color = '#28a745';
+        title.className = 'text-xl font-bold text-green-600 mb-2';
         desc.innerText = 'Nhập mật khẩu Giáo viên của bạn để xác nhận thêm sinh viên mới.';
-        confirmBtn.className = 'btn';
-        confirmBtn.style.background = '#28a745';
+        confirmBtn.className = 'flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 rounded-md transition cursor-pointer';
+        confirmBtn.style.background = '';
     }
     
     modal.style.display = 'flex';

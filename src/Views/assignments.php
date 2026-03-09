@@ -1,15 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <title>Giao Bài & Trả Bài</title>
-    <link rel="stylesheet" href="/assets/css/style.css">
-</head>
-
-<body class="bg-gray-100 font-sans p-4 sm:p-6 text-gray-800">
+<?php
+$pageTitle = 'Giao Bài & Trả Bài';
+require __DIR__ . '/layout/header.php';
+?>
     <div class="max-w-5xl mx-auto">
-        <a href="/" class="text-indigo-600 hover:text-indigo-800 font-medium inline-block mb-4 sm:mb-6 transition">&larr; Quay lại trang chủ</a>
 
         <h2 class="text-2xl sm:text-3xl font-bold text-indigo-600 mb-6 sm:mb-8 border-b pb-2">Hệ Thống Bài Tập</h2>
 
@@ -166,14 +159,6 @@
         <?php endif; ?>
     </div>
 
-    <div id="toast-container" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2"></div>
-    <script src="/assets/js/script.js"></script>
-    <script>
-        <?php if (!empty($toastError)): ?> showToast("<?= htmlspecialchars($toastError) ?>", "error");
-        <?php endif; ?>
-        <?php if (!empty($toastSuccess)): ?> showToast("<?= htmlspecialchars($toastSuccess) ?>", "success");
-        <?php endif; ?>
-    </script>
-</body>
+    <?php require __DIR__ . '/layout/footer.php'; ?>
 
-</html>
+

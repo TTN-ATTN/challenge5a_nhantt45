@@ -1,79 +1,74 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thêm Sinh Viên Mới</title>
-    <link rel="stylesheet" href="/assets/css/style.css">
-</head>
-<body class="bg-gray-100 font-sans p-4 sm:p-6 text-gray-800">
-    <div class="max-w-4xl mx-auto">
-        <a href="/" class="text-indigo-600 hover:text-indigo-800 font-medium inline-block mb-4 transition">&larr; Quay lại trang chủ</a>
-
-        <div class="bg-white p-8 rounded-lg shadow-sm">
-            <h2 class="text-2xl font-bold text-green-600 mb-4 border-b pb-2">Thêm Sinh Viên Mới</h2>
-            
-            <form id="createStudentForm" action="/create-student" method="POST" class="mt-4 space-y-4">
-                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
-                <input type="hidden" name="current_password" id="create_current_password" value="">
-
-                <div>
-                    <label class="block text-gray-700 font-medium mb-1">Tên đăng nhập (*):</label>
-                    <input type="text" name="username" required 
-                           class="w-full max-w-md px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition">
-                </div>
-                <div>
-                    <label class="block text-gray-700 font-medium mb-1">Họ và tên (*):</label>
-                    <input type="text" name="full_name" required 
-                           class="w-full max-w-md px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition">
-                </div>
-                <div>
-                    <label class="block text-gray-700 font-medium mb-1">Email (*):</label>
-                    <input type="email" name="email" required 
-                           class="w-full max-w-md px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition">
-                </div>
-                <div>
-                    <label class="block text-gray-700 font-medium mb-1">Số điện thoại (*):</label>
-                    <input type="text" name="phone" required 
-                           class="w-full max-w-md px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition">
-                </div>
-                <div>
-                    <label class="block text-gray-700 font-medium mb-1">Mật khẩu khởi tạo cho SV (*):</label>
-                    <input type="password" name="password" required 
-                           class="w-full max-w-md px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition">
-                </div>
-
-                <button type="button" class="mt-6 bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-md shadow transition" onclick="openModal('create', null)">+ Tạo sinh viên</button>
-            </form>
-        </div>
-    </div>
-
-    <div id="toast-container" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2"></div>
-
-    <div id="passwordModal" class="hidden fixed inset-0 bg-black bg-opacity-60 z-50 flex justify-center items-center backdrop-blur-sm transition-opacity">
-        <div class="bg-white p-6 rounded-lg w-full max-w-sm text-center shadow-xl">
-            <h3 id="modalTitle" class="text-xl font-bold text-green-600 mb-2">Xác nhận</h3>
-            <p id="modalDesc" class="text-sm text-gray-600 mb-6">Nhập mật khẩu Giáo viên để xác nhận tạo sinh viên.</p>
-
-            <input type="password" id="modal_password" 
-                   class="w-full px-4 py-2 mb-6 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition" 
-                   placeholder="Mật khẩu hiện tại...">
-
-            <div class="flex justify-between gap-4">
-                <button type="button" class="flex-1 bg-gray-500 hover:bg-gray-600 text-white font-semibold py-2 rounded-md transition" onclick="closeModal()">Hủy</button>
-                <button type="button" id="modalConfirmBtn" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 rounded-md transition" onclick="submitAction()">Xác nhận</button>
+<?php
+$pageTitle = 'Thêm sinh viên mới';
+require __DIR__ . '/layout/header.php';
+?>
+<div class="max-w-3xl mx-auto mt-6">
+    <div class="bg-white p-6 sm:p-10 rounded-xl shadow-md border border-gray-100">
+        
+        <div class="flex items-center gap-3 mb-8 border-b border-gray-200 pb-4">
+            <div class="bg-green-100 p-2 rounded-lg text-green-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
             </div>
+            <h2 class="text-2xl font-bold text-gray-800">Thêm Sinh Viên Mới</h2>
         </div>
-    </div>
+        
+        <form id="createStudentForm" action="/create-student" method="POST" class="space-y-6">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
+            <input type="hidden" name="current_password" id="create_current_password" value="">
 
-    <script src="/assets/js/script.js"></script>
-    <script>
-        <?php if (!empty($toastError)): ?>
-            showToast("<?= htmlspecialchars($toastError) ?>", "error");
-        <?php endif; ?>
-        <?php if (!empty($toastSuccess)): ?>
-            showToast("<?= htmlspecialchars($toastSuccess) ?>", "success");
-        <?php endif; ?>
-    </script>
-</body>
-</html>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <!-- Group 1: Tên đăng nhập -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Tên đăng nhập <span class="text-red-500">*</span></label>
+                    <input type="text" name="username" required 
+                           class="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg focus:bg-white focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-transparent transition-all duration-200"
+                           placeholder="Nhập username...">
+                </div>
+
+                <!-- Group 2: Mật khẩu khởi tạo -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Mật khẩu khởi tạo <span class="text-red-500">*</span></label>
+                    <input type="password" name="password" required 
+                           class="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg focus:bg-white focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-transparent transition-all duration-200"
+                           placeholder="Nhập mật khẩu cho SV...">
+                </div>
+
+                <!-- Group 3: Họ và tên -->
+                <div class="sm:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Họ và tên <span class="text-red-500">*</span></label>
+                    <input type="text" name="full_name" required 
+                           class="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg focus:bg-white focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-transparent transition-all duration-200"
+                           placeholder="Nhập họ và tên đầy đủ...">
+                </div>
+
+                <!-- Group 4: Email -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Email <span class="text-red-500">*</span></label>
+                    <input type="email" name="email" required 
+                           class="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg focus:bg-white focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-transparent transition-all duration-200"
+                           placeholder="sinhvien@example.com">
+                </div>
+
+                <!-- Group 5: Số điện thoại -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Số điện thoại <span class="text-red-500">*</span></label>
+                    <input type="text" name="phone" required 
+                           class="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg focus:bg-white focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-transparent transition-all duration-200"
+                           placeholder="Nhập số điện thoại...">
+                </div>
+            </div>
+
+            <div class="mt-8 pt-6 border-t border-gray-100 flex flex-col sm:flex-row justify-end gap-4">
+                <a href="/" class="text-center px-6 py-2.5 text-gray-600 bg-gray-100 hover:bg-gray-200 font-medium rounded-lg transition-colors cursor-pointer">
+                    Hủy bỏ
+                </a>
+                <button type="button" class="text-center bg-green-600 hover:bg-green-700 text-white font-bold py-2.5 px-8 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 flex justify-center items-center gap-2 cursor-pointer" onclick="if(document.getElementById('createStudentForm').checkValidity()) { openModal('create', null); } else { document.getElementById('createStudentForm').reportValidity(); }">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                    Tạo sinh viên
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<?php require __DIR__ . '/layout/footer.php'; ?>

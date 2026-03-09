@@ -1,12 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/assets/css/style.css">
-    <title>Đăng nhập</title>
-</head>
-<body class="bg-gray-100 min-h-screen flex items-center justify-center font-sans">
+<?php 
+$pageTitle = 'Đăng nhập';
+$bodyClass = 'bg-gray-100 text-gray-800 font-sans';
+$mainClass = 'flex items-center justify-center p-4 sm:p-6';
+require __DIR__ . '/layout/header.php'; 
+?>
     <div class="bg-white p-6 sm:p-8 rounded-lg shadow-md w-full max-w-md">
         <h2 class="text-2xl font-bold mb-6 text-center text-indigo-600">Đăng nhập</h2>
         
@@ -35,5 +32,4 @@
             </button>    
         </form>
     </div>
-</body>
-</html>
+<?php require __DIR__ . '/layout/footer.php'; ?>
