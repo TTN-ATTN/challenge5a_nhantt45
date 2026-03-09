@@ -40,9 +40,6 @@ $bodyClass = $bodyClass ?? 'bg-gray-100 text-gray-800 font-sans bg-gray-50';
                         <span class="text-indigo-200 text-sm">Chào,</span> <strong class="text-white"><?= htmlspecialchars($currentUser['full_name'] ?? '') ?></strong>
                         <span class="text-indigo-300 text-xs ml-1">(<?= htmlspecialchars($currentUser['role'] ?? '') ?>)</span>
                     </div>
-                    <?php if ($currentUser['role'] === 'teacher'): ?>
-                        <a href="/create-student" class="text-sm bg-green-500 hover:bg-green-600 text-white px-3 py-1.5 rounded transition">+ Thêm SV</a>
-                    <?php endif; ?>
                     <a href="/logout" class="text-sm bg-indigo-700 hover:bg-red-600 text-white px-3 py-1.5 rounded transition">Đăng xuất</a>
                 </div>
 
