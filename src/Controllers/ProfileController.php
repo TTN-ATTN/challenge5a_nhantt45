@@ -84,35 +84,58 @@ class ProfileController
         }
     }
 
-    public function validateInfo($email, $phoneNumber, $location = "/", $fullName = null, $username = null)
+    public function validateInfo($email, $phoneNumber, $location = "/", $fullName = null, $username = null, $isTeacher = false)
     {
+        $userModel = new User();
+
+        // validate username
+        if ($username !== null) {
+            $allowedUsername = '/^[a-zA-Z0-9_]+$/';
+            if (!preg_match($allowedUsername, $username)) {
+                Session::set('toast_error', 'Tên đăng nhập chỉ được chứa chữ cái, số và dấu gạch dưới!');
+                header("Location: $location");
+                exit;
+            }
+            if ($isTeacher && $userModel->getUserByUsername($username)) {
+                Session::set('toast_error', 'Tên đăng nhập đã tồn tại, vui lòng chọn tên khác!');
+                header("Location: $location");
+                exit;
+            }
+        }
+        
         // Validate Email
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            Session::set('toast_error', 'Định dạng Email không hợp lệ!');
-            header("Location: $location");
-            exit;
-        }
-
-        // Validate Số điện thoại
-        if (preg_match('/[^0-9+\-\s]/', $phoneNumber)) {
-            Session::set('toast_error', 'Số điện thoại chỉ được chứa số và các dấu + -');
-            header("Location: $location");
-            exit;
-        }
-
-        if ($fullName !== null) {
-            $allowedCharacters = '/^[a-zA-ZÀ-ỹ\s]+$/u';
-            if (!preg_match($allowedCharacters, $fullName)) {
-                Session::set('toast_error', 'Họ tên chỉ được chứa chữ cái và khoảng trắng!');
+        if ($email !== null) {
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                Session::set('toast_error', 'Định dạng Email không hợp lệ!');
+                header("Location: $location");
+                exit;
+            }
+            if ($isTeacher && $userModel->getUserByEmail($email)) {
+                Session::set('toast_error', 'Email đã tồn tại, vui lòng sử dụng email khác!');
                 header("Location: $location");
                 exit;
             }
         }
 
-        if ($username !== null) {
-            $allowedUsername = '/^[a-zA-Z0-9_]+$/';
-            if (!preg_match($allowedUsername, $username)) {
-                Session::set('toast_error', 'Tên đăng nhập chỉ được chứa chữ cái, số và dấu gạch dưới!');
+        // Validate Số điện thoại
+        if ($phoneNumber !== null) {
+            if (preg_match('/[^0-9+\-\s]/', $phoneNumber)) {
+                Session::set('toast_error', 'Số điện thoại chỉ được chứa số và các dấu + -');
+                header("Location: $location");
+                exit;
+            }
+            if ($isTeacher && $userModel->getUserByPhoneNumber($phoneNumber)) {
+                Session::set('toast_error', 'Số điện thoại đã tồn tại, vui lòng sử dụng số khác!');
+                header("Location: $location");
+                exit;
+            }
+        }
+
+        // validate họ tên 
+        if ($fullName !== null) {
+            $allowedCharacters = '/^[a-zA-ZÀ-ỹ\s]+$/u';
+            if (!preg_match($allowedCharacters, $fullName)) {
+                Session::set('toast_error', 'Họ tên chỉ được chứa chữ cái và khoảng trắng!');
                 header("Location: $location");
                 exit;
             }
@@ -135,6 +158,18 @@ class ProfileController
         $phoneNumber = htmlspecialchars($_POST['phone'] ?? '');
 
         $this->validateInfo($email, $phoneNumber, "/profile?id=$userId");
+
+        if($userModel->getUserByEmail($email) != $currentUser){
+            Session::set('toast_error', 'Email đã tồn tại, vui lòng sử dụng email khác!');
+            header("Location: /profile?id=$userId");
+            exit;
+        }
+
+        if($userModel->getUserByPhoneNumber($phoneNumber) != $currentUser){
+            Session::set('toast_error', 'Số điện thoại đã tồn tại, vui lòng sử dụng số khác!');
+            header("Location: /profile?id=$userId");
+            exit;
+        }
 
         $newPassword = !empty($_POST['new_password']) ? password_hash($_POST['new_password'], PASSWORD_BCRYPT) : null;
         $avatarPath = null;
@@ -222,7 +257,7 @@ class ProfileController
                     exit;
                 }
 
-                $this->validateInfo($email, $phoneNumber, "/create-student", $fullName, $username);
+                $this->validateInfo($email, $phoneNumber, "/create-student", $fullName, $username, $isTeacher=true);
 
                 $userModel->createStudent($username, password_hash($password, PASSWORD_BCRYPT), $fullName, $email, $phoneNumber);
                 Session::set('toast_success', 'Tạo sinh viên mới thành công!');
@@ -237,7 +272,7 @@ class ProfileController
                 $phoneNumber = htmlspecialchars($_POST['phone'] ?? '');
                 $newPassword = !empty($_POST['new_password']) ? password_hash($_POST['new_password'], PASSWORD_BCRYPT) : null;
 
-                $this->validateInfo($email, $phoneNumber, "/profile?id=$targetStudentId", $fullName, $username);
+                $this->validateInfo($email, $phoneNumber, "/profile?id=$targetStudentId", $fullName, $username, $isTeacher=true);
 
                 $userModel->updateStudentProfileForTeacher($targetStudentId, $username, $fullName, $email, $phoneNumber, $newPassword);
                 Session::set('toast_success', 'Cập nhật thông tin sinh viên thành công!');

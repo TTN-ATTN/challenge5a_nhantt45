@@ -23,6 +23,22 @@ class User
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
+    public function getUserByPhoneNumber($phoneNumber)
+    {
+        $stmt = $this->db->prepare("SELECT * FROM users WHERE phone_number = :phone_number LIMIT 1");
+        $stmt->bindParam(':phone_number', $phoneNumber);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function getUserByEmail($email)
+    {
+        $stmt = $this->db->prepare("SELECT * FROM users WHERE email = :email LIMIT 1");
+        $stmt->bindParam(':email', $email);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
     public function getUserById($id)
     {
         $stmt = $this->db->prepare("SELECT * FROM users WHERE id = :id LIMIT 1");
