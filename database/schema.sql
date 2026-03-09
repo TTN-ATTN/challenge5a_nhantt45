@@ -33,22 +33,21 @@ CREATE TABLE
         id INT auto_increment PRIMARY KEY,
         teacher_id INT NOT NULL,
         title VARCHAR(255) NOT NULL,
-        asgm_url VARCHAR(255) NOT NULL, -- can be a URL or a file uploaded to the server
+        description TEXT,
+        file_path VARCHAR(255) NOT NULL,
+        deadline DATETIME NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        deadline TIMESTAMP NOT NULL,
         FOREIGN KEY (teacher_id) REFERENCES users (id) ON DELETE cascade
     );
 
--- TODO: only teacher can see the list of the submissions
 CREATE TABLE
     submissions (
         id INT auto_increment PRIMARY KEY,
         assignment_id INT NOT NULL,
         student_id INT NOT NULL,
-        subs_url VARCHAR(255) NOT NULL, -- can be a URL or a file uploaded to the server
-        grade FLOAT (4, 2),
-        submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        UNIQUE(assignment_id, student_id),
+        file_path VARCHAR(255) NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        score FLOAT (4, 2),
         FOREIGN KEY (assignment_id) REFERENCES assignments (id) ON DELETE cascade,
         FOREIGN KEY (student_id) REFERENCES users (id) ON DELETE cascade
     );

@@ -52,7 +52,7 @@ class ProfileController
         require_once __DIR__ . '/../Views/profile.php';
     }
 
-    public function validateRequest($currentUser, $userId)
+    private function validateRequest($currentUser, $userId)
     {
         if (!$currentUser) {
             Session::destroy();
@@ -84,7 +84,7 @@ class ProfileController
         }
     }
 
-    public function validateInfo($email, $phoneNumber, $location = "/", $fullName = null, $username = null, $isTeacher = false)
+    private function validateInfo($email, $phoneNumber, $location = "/", $fullName = null, $username = null, $isTeacher = false)
     {
         $userModel = new User();
 
@@ -102,7 +102,7 @@ class ProfileController
                 exit;
             }
         }
-        
+
         // Validate Email
         if ($email !== null) {
             if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -201,13 +201,13 @@ class ProfileController
 
                 if (in_array($mime, $allowedMimeTypes)) {
                     $newFileName = md5(time() . $fileName) . '.' . pathinfo($fileName, PATHINFO_EXTENSION);
-                    $uploadDir = __DIR__ . '/../../storage/uploads/';
+                    $uploadDir = __DIR__ . '/../../storage/uploads/avatars/';
                     if (!is_dir($uploadDir)) {
                         mkdir($uploadDir, 0777, true);
                     }
                     $destPath = $uploadDir . $newFileName;
                     if (move_uploaded_file($fileTmpPath, $destPath)) {
-                        $avatarPath = '/api/files/' . $newFileName;
+                        $avatarPath = '/api/avatars/' . $newFileName;
                     }
                 } else {
                     Session::set('toast_error', 'Chỉ hỗ trợ upload file ảnh (JPG, PNG, GIF).');
@@ -231,7 +231,7 @@ class ProfileController
         exit;
     }
 
-    public function teacherOperation($operation)
+    private function teacherOperation($operation)
     {
         $userId = Session::get('user_id');
         if (!$userId || Session::get('role') !== 'teacher') {
