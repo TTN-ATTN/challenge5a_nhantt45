@@ -32,7 +32,8 @@ $routes = [
         '/login' => ['controller' => 'App\Controllers\AuthController', 'method' => 'showLogin'],
         '/logout' => ['controller' => 'App\Controllers\AuthController', 'method' => 'logout'],
         '/create-student' => ['controller' => 'App\Controllers\ProfileController', 'method' => 'showCreateStudentForm'],
-        '/assignments' => ['controller' => 'App\Controllers\AssignmentController', 'method' => 'index']
+        '/assignments' => ['controller' => 'App\Controllers\AssignmentController', 'method' => 'index'],
+        '/challenges' => ['controller' => 'App\Controllers\ChallengeController', 'method' => 'index']
     ],
     'POST' => [
         '/login' => ['controller' => 'App\Controllers\AuthController', 'method' => 'login'],
@@ -46,7 +47,11 @@ $routes = [
         '/assignments/submit' => ['controller' => 'App\Controllers\AssignmentController', 'method' => 'submit'],
         '/assignments/grade' => ['controller' => 'App\Controllers\AssignmentController', 'method' => 'grade'],
         '/assignments/delete' => ['controller' => 'App\Controllers\AssignmentController', 'method' => 'deleteAssignment'],
-        '/assignments/unsubmit' => ['controller' => 'App\Controllers\AssignmentController', 'method' => 'unsubmit']
+        '/assignments/unsubmit' => ['controller' => 'App\Controllers\AssignmentController', 'method' => 'unsubmit'],
+        '/challenges/create' => ['controller' => 'App\Controllers\ChallengeController', 'method' => 'create'],
+        '/challenges/solve' => ['controller' => 'App\Controllers\ChallengeController', 'method' => 'solve'],
+        '/challenges/edit' => ['controller' => 'App\Controllers\ChallengeController', 'method' => 'edit'],    
+        '/challenges/delete' => ['controller' => 'App\Controllers\ChallengeController', 'method' => 'delete']
     ]
 ];
 try {
@@ -61,7 +66,7 @@ try {
         ErrorController::notFound();
     }
 } catch (Exception $e) {
-    // echo $e->getMessage();
+    echo $e->getMessage();
     error_log($e->getMessage());
     ErrorController::serverError();
 }

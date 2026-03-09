@@ -54,20 +54,21 @@ CREATE TABLE
 
 CREATE TABLE
     challenges (
-        id INT auto_increment PRIMARY KEY,
+        id INT AUTO_INCREMENT PRIMARY KEY,
         teacher_id INT NOT NULL,
-        hint text NOT NULL,
-        chall_url VARCHAR(255) NOT NULL, -- path to txt file
+        hint TEXT NOT NULL,
+        file_hash VARCHAR(64) NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (teacher_id) REFERENCES users (id) ON DELETE cascade
+        FOREIGN KEY (teacher_id) REFERENCES users (id) ON DELETE CASCADE
     );
 
-CREATE TABLE messages (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    sender_id INT NOT NULL,
-    receiver_id INT NOT NULL,
-    content TEXT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (receiver_id) REFERENCES users(id) ON DELETE CASCADE
-);
+CREATE TABLE
+    messages (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        sender_id INT NOT NULL,
+        receiver_id INT NOT NULL,
+        content TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (sender_id) REFERENCES users (id) ON DELETE CASCADE,
+        FOREIGN KEY (receiver_id) REFERENCES users (id) ON DELETE CASCADE
+    );

@@ -17,6 +17,7 @@
         <a href="/logout" class="action-link">Đăng xuất</a>
     </div>
     <a href="/assignments" class="btn" style="display: inline-block; margin-bottom: 20px; background: #17a2b8;">Bài Tập</a>
+    <a href="/challenges" class="btn" style="display: inline-block; margin-bottom: 20px; margin-left: 10px; background: #6f42c1;">Trò chơi giải đố</a>
 
     <?php if ($currentUser['role'] === 'teacher'): ?>
         <a href="/create-student" class="btn" style="display: inline-block; margin-bottom: 15px; background: #28a745;">+ Thêm sinh viên mới</a>
