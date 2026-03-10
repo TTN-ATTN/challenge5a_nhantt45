@@ -1,10 +1,9 @@
-<IfModule mod_rewrite.c>
-    RewriteEngine On
-
-    <FilesMatch "^\.env|autoload\.php|seed\.php">
+<FilesMatch "^\.env|autoload\.php|seed\.php">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
         Order allow,deny
         Deny from all
-    </FilesMatch>
-
-    RewriteRule ^(.*)$ public/$1 [L]
-</IfModule>
+    </IfModule>
+</FilesMatch>
