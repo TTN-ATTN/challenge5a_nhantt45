@@ -12,17 +12,19 @@ try {
     if (file_exists($envPath)) {
         $lines = file($envPath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
         foreach ($lines as $line) {
-            if (strpos(trim($line), '#') === 0) continue; // Bỏ qua comment
+            if (strpos(trim($line), '#') === 0) continue;
             if (strpos($line, '=') !== false) {
                 list($name, $value) = explode('=', $line, 2);
-                putenv(trim($name) . '=' . trim($value));
+                $name = trim($name);
+                $value = trim($value);
+                $_ENV[$name] = $value;
+                $_SERVER[$name] = $value;
             }
         }
     }
-    // var_dump(getenv());
-} catch (Exception $e) {
-    echo $e->getMessage();
-    ErrorController::serverError();
+    // var_dump($_ENV);
+} catch (Exception $e) {;
+    ErrorController::serverError($e->getMessage());
 }
 
 $requestUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
@@ -57,6 +59,7 @@ $routes = [
         '/login' => ['controller' => 'App\Controllers\AuthController', 'method' => 'login'],
         '/profile' => ['controller' => 'App\Controllers\ProfileController', 'method' => 'updateProfile'],
         '/delete-student' => ['controller' => 'App\Controllers\ProfileController', 'method' => 'deleteStudent'],
+        '/edit-student' => ['controller' => 'App\Controllers\ProfileController', 'method' => 'editStudent'],
         '/create-student' => ['controller' => 'App\Controllers\ProfileController', 'method' => 'createStudent'],
         '/send-message' => ['controller' => 'App\Controllers\MessageController', 'method' => 'store'],
         '/edit-message' => ['controller' => 'App\Controllers\MessageController', 'method' => 'update'],
@@ -85,6 +88,5 @@ try {
     }
 } catch (Exception $e) {
     // echo $e->getMessage();
-    error_log($e->getMessage());
-    ErrorController::serverError();
+    ErrorController::serverError($e->getMessage());
 }
