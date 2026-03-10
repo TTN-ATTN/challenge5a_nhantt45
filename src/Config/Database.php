@@ -1,6 +1,7 @@
 <?php
 namespace App\Config;
 
+use App\Controllers\ErrorController;
 use PDO;
 use PDOException;
 
@@ -26,7 +27,8 @@ class Database {
             $this->connection = new PDO($dsn, $username, $password, $options);
         } catch (PDOException $e) {
             error_log("Database connection failed: " . $e->getMessage()); 
-            die(json_encode(["error" => "Internal Server Error"])); 
+            ErrorController::serverError("Không thể kết nối đến cơ sở dữ liệu. Vui lòng thử lại sau.");
+            exit; 
         }
     }
 

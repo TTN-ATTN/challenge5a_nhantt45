@@ -1,13 +1,16 @@
 <?php
+
 namespace App\Controllers;
 
 use App\Controllers\ErrorController;
 use App\Core\Session;
 
-class FileController {
-    public function serveAvatar($filename) {
+class FileController
+{
+    public function serveAvatar($filename)
+    {
         $filename = basename($filename); // lấy tên file để chống Path Traversal
-        
+
         $filePath = __DIR__ . '/../../storage/uploads/avatars/' . $filename;
 
         if (!file_exists($filePath)) {
@@ -31,39 +34,50 @@ class FileController {
         exit;
     }
 
-    public function serveAssignmentFile($filename) {
+    public function serveAssignmentFile($filename)
+    {
         // Kiểm tra đăng nhập
         if (!Session::get('user_id')) {
-            http_response_code(403);
-            die("Unauthorized Access. Vui lòng đăng nhập.");
+            ErrorController::forbidden("Bạn phải đăng nhập để tải file.");
+            exit;
         }
 
         // Chống Path Traversal
-        $filename = basename($filename); 
+        $filename = basename($filename);
         $filePath = __DIR__ . '/../../storage/uploads/assignments/' . $filename;
 
         if (!file_exists($filePath)) {
             (new ErrorController())::notFound();
+            exit;
         }
 
-        // Quét kiểm tra MIME type để đảm bảo không phải file thực thi
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
         $mime = finfo_file($finfo, $filePath);
 
-        $bannedMimes = ['text/html', 'application/x-httpd-php', 'application/javascript', 'application/x-sh'];
-        if (in_array($mime, $bannedMimes)) {
-            (new ErrorController())::forbidden("Forbidden file type.");
+        $allowedMimes = [
+            'application/pdf',                                                          // .pdf
+            'application/msword',                                                       // .doc
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',  // .docx
+            'text/plain',                                                               // .txt
+            'application/zip',                                                          // .zip
+            'application/x-rar-compressed',                                             // .rar
+            'application/vnd.rar'                                                       // .rar
+        ];
+
+        if (!in_array($mime, $allowedMimes)) {
+            (new ErrorController())::forbidden("Forbidden file type. Loại tệp này không được phép tải xuống.");
+            exit;
         }
 
         // Báo trình duyệt tải file
         header('Content-Description: File Transfer');
-        header('Content-Type: application/octet-stream'); 
+        header('Content-Type: application/octet-stream');
         header('Content-Disposition: attachment; filename="' . $filename . '"'); // Hiện popup save file
         header('Expires: 0');
         header('Cache-Control: must-revalidate');
         header('Pragma: public');
         header('Content-Length: ' . filesize($filePath));
-        
+
         readfile($filePath);
         exit;
     }
