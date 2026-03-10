@@ -158,14 +158,15 @@ class ProfileController
         $phoneNumber = htmlspecialchars($_POST['phone'] ?? '');
 
         $this->validateInfo($email, $phoneNumber, "/profile?id=$userId");
-
-        if($userModel->getUserByEmail($email) != $currentUser){
+        $existingUserByEmail = $userModel->getUserByEmail($email);
+        if($existingUserByEmail && $existingUserByEmail['id'] !== $currentUser['id']){
             Session::set('toast_error', 'Email đã tồn tại, vui lòng sử dụng email khác!');
             header("Location: /profile?id=$userId");
             exit;
         }
 
-        if($userModel->getUserByPhoneNumber($phoneNumber) != $currentUser){
+        $existingUserByPhoneNumber = $userModel->getUserByPhoneNumber($phoneNumber);
+        if($existingUserByPhoneNumber && $existingUserByPhoneNumber['id'] !== $currentUser['id']){
             Session::set('toast_error', 'Số điện thoại đã tồn tại, vui lòng sử dụng số khác!');
             header("Location: /profile?id=$userId");
             exit;
