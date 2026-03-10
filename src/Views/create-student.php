@@ -6,9 +6,6 @@ require __DIR__ . '/layout/header.php';
     <div class="bg-white p-6 sm:p-10 rounded-xl shadow-md border border-gray-100">
         
         <div class="flex items-center gap-3 mb-8 border-b border-gray-200 pb-4">
-            <div class="bg-green-100 p-2 rounded-lg text-green-600">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
-            </div>
             <h2 class="text-2xl font-bold text-gray-800">Thêm Sinh Viên Mới</h2>
         </div>
         
