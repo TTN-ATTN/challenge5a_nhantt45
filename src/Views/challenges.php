@@ -87,7 +87,7 @@ require __DIR__ . '/layout/header.php';
                         <?php endif; ?>
 
                         <?php if (isset($solvedId) && $solvedId == $chall['id']): ?>
-                            <div class="bg-green-100 text-green-800 border border-green-300 p-4 rounded font-mono whitespace-pre-wrap leading-relaxed mt-4">
+                            <div class="bg-green-100 text-green-800 border border-green-300 p-4 rounded font-mono whitespace-pre-wrap break-all leading-relaxed mt-4">
                                 <strong class="text-lg text-green-900 block mb-2">Chúc mừng! Nội dung:</strong>
                                 <?= htmlspecialchars($solvedContent) ?>
                             </div>
