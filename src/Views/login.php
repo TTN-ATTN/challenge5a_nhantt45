@@ -14,6 +14,8 @@ require __DIR__ . '/layout/header.php';
         <?php endif; ?>
 
         <form method="POST" action="/login" class="space-y-4">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
+
             <div>
                 <label for="username" class="block text-gray-700 font-medium mb-1">Tên đăng nhập:</label>
                 <input type="text" id="username" name="username" required 
