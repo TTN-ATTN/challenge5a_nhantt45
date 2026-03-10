@@ -7,16 +7,22 @@ use App\Controllers\FileController;
 
 Session::start();
 
-$envPath = __DIR__ . '/../.env.example';
-if (file_exists($envPath)) {
-    $lines = file($envPath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-    foreach ($lines as $line) {
-        if (strpos(trim($line), '#') === 0) continue; // Bỏ qua comment
-        if (strpos($line, '=') !== false) {
-            list($name, $value) = explode('=', $line, 2);
-            putenv(trim($name) . '=' . trim($value));
+try {
+    $envPath = __DIR__ . '/../.env';
+    if (file_exists($envPath)) {
+        $lines = file($envPath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        foreach ($lines as $line) {
+            if (strpos(trim($line), '#') === 0) continue; // Bỏ qua comment
+            if (strpos($line, '=') !== false) {
+                list($name, $value) = explode('=', $line, 2);
+                putenv(trim($name) . '=' . trim($value));
+            }
         }
     }
+    // var_dump(getenv());
+} catch (Exception $e) {
+    echo $e->getMessage();
+    ErrorController::serverError();
 }
 
 $requestUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
@@ -62,7 +68,7 @@ $routes = [
         '/assignments/unsubmit' => ['controller' => 'App\Controllers\AssignmentController', 'method' => 'unsubmit'],
         '/challenges/create' => ['controller' => 'App\Controllers\ChallengeController', 'method' => 'create'],
         '/challenges/solve' => ['controller' => 'App\Controllers\ChallengeController', 'method' => 'solve'],
-        '/challenges/edit' => ['controller' => 'App\Controllers\ChallengeController', 'method' => 'edit'],    
+        '/challenges/edit' => ['controller' => 'App\Controllers\ChallengeController', 'method' => 'edit'],
         '/challenges/delete' => ['controller' => 'App\Controllers\ChallengeController', 'method' => 'delete']
     ]
 ];
@@ -78,7 +84,7 @@ try {
         ErrorController::notFound();
     }
 } catch (Exception $e) {
-    echo $e->getMessage();
+    // echo $e->getMessage();
     error_log($e->getMessage());
     ErrorController::serverError();
 }
