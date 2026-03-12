@@ -140,13 +140,17 @@ require __DIR__ . '/layout/header.php';
 
                                                 <a href="<?= htmlspecialchars($sub['file_path']) ?>" target="_blank" class="text-cyan-600 hover:text-cyan-800 text-sm font-medium hover:underline whitespace-nowrap">Tải bài làm</a>
 
-                                                <!-- Form nhập điểm -->
+                                                <!-- Form nhập điểm (chỉ hiển thị với giáo viên sở hữu bài tập) -->
+                                                <?php if ($currentUser['id'] == $hw['teacher_id']): ?>
                                                 <form action="/assignments/grade" method="POST" class="flex items-center gap-2">
                                                     <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
                                                     <input type="hidden" name="submission_id" value="<?= $sub['id'] ?>">
                                                     <input type="number" step="0.1" min="0" max="10" name="score" value="<?= $sub['score'] ?? '' ?>" placeholder="Điểm" class="w-16 px-2 py-1 text-sm border rounded focus:ring-2 focus:ring-green-400 focus:outline-none" required>
                                                     <button type="submit" class="bg-green-500 hover:bg-green-600 text-white text-xs font-bold py-1.5 px-3 rounded transition shadow-sm">Lưu</button>
                                                 </form>
+                                                <?php elseif (isset($sub['score'])): ?>
+                                                    <span class="text-sm text-gray-600">Điểm: <strong class="text-red-600"><?= htmlspecialchars($sub['score']) ?></strong> / 10</span>
+                                                <?php endif; ?>
                                             </li>
                                         <?php endforeach; ?>
                                     </ul>

@@ -15,6 +15,7 @@ class FileController
 
         if (!file_exists($filePath)) {
             (new ErrorController())::notFound();
+            exit;
         }
 
         // Lấy MIME type chuẩn của file để trình duyệt biết cách render
@@ -24,6 +25,7 @@ class FileController
         $allowedMimes = ['image/jpeg', 'image/png', 'image/gif'];
         if (!in_array($mime, $allowedMimes)) {
             (new ErrorController())::forbidden("Forbidden file type");
+            exit;
         }
 
         // Báo cho trình duyệt biết đây là file ảnh và cho phép cache

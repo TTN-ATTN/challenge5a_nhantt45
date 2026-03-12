@@ -26,8 +26,7 @@ class Database {
         try {
             $this->connection = new PDO($dsn, $username, $password, $options);
         } catch (PDOException $e) {
-            error_log("Database connection failed: " . $e->getMessage()); 
-            ErrorController::serverError($e->getMessage());
+            ErrorController::serverError();
             exit; 
         }
     }

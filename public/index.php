@@ -88,5 +88,5 @@ try {
     }
 } catch (Exception $e) {
     // echo $e->getMessage();
-    ErrorController::serverError($e->getMessage());
+    ErrorController::serverError();
 }

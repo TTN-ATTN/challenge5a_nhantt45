@@ -108,11 +108,11 @@ class AssignmentController
     {
         $currentUser = $this->checkAuth();
         if ($currentUser['role'] !== 'teacher') {
-            (new ErrorController())->forbidden();
+            ErrorController::forbidden();
             exit;
         }
         if (!Session::verifyCsrfToken($_POST['csrf_token'] ?? '')) {
-            (new ErrorController())->forbidden("Lỗi CSRF.");
+            ErrorController::forbidden("Lỗi CSRF.");
             exit;
         }
 
@@ -148,22 +148,22 @@ class AssignmentController
     {
         $currentUser = $this->checkAuth();
         if ($currentUser['role'] !== 'student') {
-            (new ErrorController())->forbidden();
+            ErrorController::forbidden();
             exit;
         }
         if (!Session::verifyCsrfToken($_POST['csrf_token'] ?? '')) {
-            (new ErrorController())->forbidden("Lỗi CSRF.");
+            ErrorController::forbidden("Lỗi CSRF.");
             exit;
         }
 
         $assignmentId = $_POST['assignment_id'] ?? 0;
 
-        $filePath = $this->handleFileUpload('submission_file');
-        if ($filePath === false) {
+        $newfilePath = $this->handleFileUpload('submission_file');
+        if ($newfilePath === false) {
             header("Location: /assignments");
             exit;
         }
-        if ($filePath === null) {
+        if ($newfilePath === null) {
             Session::set('toast_error', 'Vui lòng chọn file bài làm để nộp.');
             header("Location: /assignments");
             exit;
@@ -172,12 +172,12 @@ class AssignmentController
         $assignmentModel = new Assignment();
         $currentSubmission = $assignmentModel->getStudentSubmission($assignmentId, $currentUser['id']);
         if ($currentSubmission) {
-            $filePath = __DIR__ . '/../../storage/uploads/assignments/' . basename($currentSubmission['file_path']);
-            if (file_exists($filePath))
-                unlink($filePath);
+            $oldfilePath = __DIR__ . '/../../storage/uploads/assignments/' . basename($currentSubmission['file_path']);
+            if (file_exists($oldfilePath))
+                unlink($oldfilePath);
             $assignmentModel->deleteSubmission($currentSubmission['id'], $currentUser['id']);
         }
-        $assignmentModel->submitAssignment($assignmentId, $currentUser['id'], $filePath);
+        $assignmentModel->submitAssignment($assignmentId, $currentUser['id'], $newfilePath);
 
         Session::set('toast_success', 'Nộp bài thành công!');
         header("Location: /assignments");
@@ -188,22 +188,34 @@ class AssignmentController
     {
         $currentUser = $this->checkAuth();
         if ($currentUser['role'] !== 'teacher') {
-            (new ErrorController())->forbidden();
+            ErrorController::forbidden();
             exit;
         }
         if (!Session::verifyCsrfToken($_POST['csrf_token'] ?? '')) {
-            (new ErrorController())->forbidden("Lỗi CSRF.");
+            ErrorController::forbidden("Lỗi CSRF.");
             exit;
         }
 
         $submissionId = $_POST['submission_id'] ?? 0;
+        $model = new Assignment();
+        $sub = $model->getSubmissionById($submissionId);
+        if (!$sub) {
+            Session::set('toast_error', 'Bài nộp không tồn tại.');
+            header("Location: /assignments");
+            exit;
+        }
+        $hw = $model->getAssignmentById($sub['assignment_id']); 
+        if (!$hw || $hw['teacher_id'] != $currentUser['id']) {
+            ErrorController::forbidden("Bạn không có quyền chấm điểm bài nộp này.");
+            exit;
+        }
         $score = $_POST['score'] ?? null;
 
         if ($score !== null && is_numeric($score)) {
             if ($score < 0 || $score > 10) {
                 Session::set('toast_error', 'Điểm số phải nằm trong khoảng từ 0 đến 10.');
             } else {
-                (new Assignment())->gradeSubmission($submissionId, $score);
+                $model->gradeSubmission($submissionId, $score);
                 Session::set('toast_success', 'Đã lưu điểm thành công!');
             }
         } else {
@@ -218,7 +230,7 @@ class AssignmentController
     {
         $currentUser = $this->checkAuth();
         if ($currentUser['role'] !== 'teacher' || !Session::verifyCsrfToken($_POST['csrf_token'] ?? '')) {
-            (new ErrorController())->forbidden();
+            ErrorController::forbidden();
             exit;
         }
 
@@ -241,7 +253,7 @@ class AssignmentController
     {
         $currentUser = $this->checkAuth();
         if ($currentUser['role'] !== 'student' || !Session::verifyCsrfToken($_POST['csrf_token'] ?? '')) {
-            (new ErrorController())->forbidden();
+            ErrorController::forbidden();
             exit;
         }
 
